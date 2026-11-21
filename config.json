@@ -1,0 +1,135 @@
+{
+  "preprocessing": {
+    "target_sr": 16000,
+    "mono": true,
+    "trim_top_db": 30,
+    "trim_frame_length": 2048,
+    "trim_hop_length": 512,
+    "peak_target": 0.99,
+    "normalize_options": [
+      "none",
+      "peak"
+    ],
+    "saved_audio_normalization": "none",
+    "version": "1.0",
+    "config_hash": "d930ff28cd",
+    "updated": "2026-11-21",
+    "owner": "Anggota A"
+  },
+  "features": {
+    "sr": 16000,
+    "n_fft": 512,
+    "hop_length": 160,
+    "n_mfcc": 13,
+    "n_mels": 40,
+    "delta_width": 9,
+    "f0_fmin": 65.0,
+    "f0_fmax": 500.0,
+    "f0_frame_length": 1024,
+    "rolloff_percent": 0.85,
+    "contrast_fmin": 100.0,
+    "contrast_n_bands": 6,
+    "n_features": 90,
+    "versions": [
+      "none",
+      "peak"
+    ],
+    "mfcc0_included": false,
+    "f0_stats": "mean, std, p05, p95, range (p95-p05), voiced_ratio",
+    "preprocessing_hash": "d930ff28cd",
+    "version": "1.0",
+    "config_hash": "0c3114fc78",
+    "updated": "2026-11-21",
+    "owner": "Anggota A"
+  },
+  "splits": {
+    "scheme": "speaker-independent, per aktor",
+    "main": {
+      "train": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "validation": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "test": [
+        21,
+        22,
+        23,
+        24
+      ]
+    },
+    "n_partitions": 5,
+    "partition_design": "siklik G0..G4, P0 = split utama",
+    "seed": 42,
+    "features_hash": "0c3114fc78",
+    "version": "1.0",
+    "config_hash": "04ad9a2f5b",
+    "updated": "2026-11-21",
+    "owner": "Anggota A"
+  },
+  "noisy_test": {
+    "snr_db": [
+      20,
+      10,
+      0
+    ],
+    "noise_types": [
+      "white",
+      "esc50"
+    ],
+    "esc50_categories": [
+      "rain",
+      "wind",
+      "vacuum_cleaner",
+      "washing_machine",
+      "engine",
+      "keyboard_typing"
+    ],
+    "esc50_source": "https://github.com/karolpiczak/ESC-50 (CC BY-NC 3.0, Piczak 2015)",
+    "esc50_silence_top_db": 40,
+    "esc50_min_seconds": 1.0,
+    "mix_point": "setelah preprocessing (trim), sebelum ekstraksi fitur",
+    "snr_reference": "daya ucapan hasil trim",
+    "same_noise_segment_across_snr": true,
+    "seed": 2026,
+    "split": "test split utama",
+    "features_hash": "0c3114fc78",
+    "version": "1.0",
+    "config_hash": "dcf3a82fad",
+    "updated": "2026-11-21",
+    "owner": "Anggota A"
+  },
+  "correlation": {
+    "method": "pearson",
+    "threshold_abs_r": 0.8,
+    "data": "train (split utama)",
+    "cluster_distance": "1 - |r|",
+    "cluster_linkage": "average",
+    "cluster_cut_distance": 0.2,
+    "representative": "rata-rata |r| tertinggi ke anggota lain dalam kelompok",
+    "robustness_check": "spearman",
+    "features_hash": "0c3114fc78",
+    "version": "1.0",
+    "config_hash": "63bc4a61b4",
+    "updated": "2026-11-21",
+    "owner": "Anggota A"
+  }
+}

@@ -1,0 +1,91 @@
+index,name,group,description,scale_dependent
+0,mfcc01_mean,mfcc,"MFCC koefisien ke-1, mean antarframe",False
+1,mfcc02_mean,mfcc,"MFCC koefisien ke-2, mean antarframe",False
+2,mfcc03_mean,mfcc,"MFCC koefisien ke-3, mean antarframe",False
+3,mfcc04_mean,mfcc,"MFCC koefisien ke-4, mean antarframe",False
+4,mfcc05_mean,mfcc,"MFCC koefisien ke-5, mean antarframe",False
+5,mfcc06_mean,mfcc,"MFCC koefisien ke-6, mean antarframe",False
+6,mfcc07_mean,mfcc,"MFCC koefisien ke-7, mean antarframe",False
+7,mfcc08_mean,mfcc,"MFCC koefisien ke-8, mean antarframe",False
+8,mfcc09_mean,mfcc,"MFCC koefisien ke-9, mean antarframe",False
+9,mfcc10_mean,mfcc,"MFCC koefisien ke-10, mean antarframe",False
+10,mfcc11_mean,mfcc,"MFCC koefisien ke-11, mean antarframe",False
+11,mfcc12_mean,mfcc,"MFCC koefisien ke-12, mean antarframe",False
+12,mfcc13_mean,mfcc,"MFCC koefisien ke-13, mean antarframe",False
+13,mfcc01_std,mfcc,"MFCC koefisien ke-1, std antarframe",False
+14,mfcc02_std,mfcc,"MFCC koefisien ke-2, std antarframe",False
+15,mfcc03_std,mfcc,"MFCC koefisien ke-3, std antarframe",False
+16,mfcc04_std,mfcc,"MFCC koefisien ke-4, std antarframe",False
+17,mfcc05_std,mfcc,"MFCC koefisien ke-5, std antarframe",False
+18,mfcc06_std,mfcc,"MFCC koefisien ke-6, std antarframe",False
+19,mfcc07_std,mfcc,"MFCC koefisien ke-7, std antarframe",False
+20,mfcc08_std,mfcc,"MFCC koefisien ke-8, std antarframe",False
+21,mfcc09_std,mfcc,"MFCC koefisien ke-9, std antarframe",False
+22,mfcc10_std,mfcc,"MFCC koefisien ke-10, std antarframe",False
+23,mfcc11_std,mfcc,"MFCC koefisien ke-11, std antarframe",False
+24,mfcc12_std,mfcc,"MFCC koefisien ke-12, std antarframe",False
+25,mfcc13_std,mfcc,"MFCC koefisien ke-13, std antarframe",False
+26,dmfcc01_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-1, mean antarframe",False
+27,dmfcc02_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-2, mean antarframe",False
+28,dmfcc03_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-3, mean antarframe",False
+29,dmfcc04_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-4, mean antarframe",False
+30,dmfcc05_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-5, mean antarframe",False
+31,dmfcc06_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-6, mean antarframe",False
+32,dmfcc07_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-7, mean antarframe",False
+33,dmfcc08_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-8, mean antarframe",False
+34,dmfcc09_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-9, mean antarframe",False
+35,dmfcc10_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-10, mean antarframe",False
+36,dmfcc11_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-11, mean antarframe",False
+37,dmfcc12_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-12, mean antarframe",False
+38,dmfcc13_mean,delta_mfcc,"Delta (laju perubahan) MFCC ke-13, mean antarframe",False
+39,dmfcc01_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-1, std antarframe",False
+40,dmfcc02_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-2, std antarframe",False
+41,dmfcc03_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-3, std antarframe",False
+42,dmfcc04_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-4, std antarframe",False
+43,dmfcc05_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-5, std antarframe",False
+44,dmfcc06_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-6, std antarframe",False
+45,dmfcc07_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-7, std antarframe",False
+46,dmfcc08_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-8, std antarframe",False
+47,dmfcc09_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-9, std antarframe",False
+48,dmfcc10_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-10, std antarframe",False
+49,dmfcc11_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-11, std antarframe",False
+50,dmfcc12_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-12, std antarframe",False
+51,dmfcc13_std,delta_mfcc,"Delta (laju perubahan) MFCC ke-13, std antarframe",False
+52,f0_mean,prosodi,"Rata-rata F0 (nada dasar) frame bersuara, Hz",False
+53,f0_std,prosodi,"Simpangan baku F0 frame bersuara, Hz",False
+54,f0_p05,prosodi,"Persentil 5 F0 frame bersuara, Hz",False
+55,f0_p95,prosodi,"Persentil 95 F0 frame bersuara, Hz",False
+56,f0_range,prosodi,"Rentang F0 = p95 - p05, Hz",False
+57,voiced_ratio,prosodi,Proporsi frame bersuara (0-1),False
+58,rms_mean,energi,Rata-rata energi RMS antarframe,True
+59,rms_std,energi,Simpangan baku energi RMS antarframe,True
+60,rms_max,energi,Energi RMS frame terbesar,True
+61,zcr_mean,zcr,Rata-rata zero-crossing rate,False
+62,zcr_std,zcr,Simpangan baku zero-crossing rate,False
+63,centroid_mean,spektral,"Spectral centroid (pusat massa spektrum), Hz, mean",False
+64,centroid_std,spektral,"Spectral centroid (pusat massa spektrum), Hz, std",False
+65,bandwidth_mean,spektral,"Spectral bandwidth (lebar sebaran spektrum), Hz, mean",False
+66,bandwidth_std,spektral,"Spectral bandwidth (lebar sebaran spektrum), Hz, std",False
+67,rolloff_mean,spektral,"Spectral rolloff (frekuensi batas 85% energi), Hz, mean",False
+68,rolloff_std,spektral,"Spectral rolloff (frekuensi batas 85% energi), Hz, std",False
+69,flatness_mean,spektral,"Spectral flatness (0 = bernada, 1 = seperti noise), mean",False
+70,flatness_std,spektral,"Spectral flatness (0 = bernada, 1 = seperti noise), std",False
+71,contrast1_mean,contrast,"Spectral contrast pita ke-1 (selisih puncak-lembah), mean",False
+72,contrast2_mean,contrast,"Spectral contrast pita ke-2 (selisih puncak-lembah), mean",False
+73,contrast3_mean,contrast,"Spectral contrast pita ke-3 (selisih puncak-lembah), mean",False
+74,contrast4_mean,contrast,"Spectral contrast pita ke-4 (selisih puncak-lembah), mean",False
+75,contrast5_mean,contrast,"Spectral contrast pita ke-5 (selisih puncak-lembah), mean",False
+76,contrast6_mean,contrast,"Spectral contrast pita ke-6 (selisih puncak-lembah), mean",False
+77,contrast7_mean,contrast,"Spectral contrast pita ke-7 (selisih puncak-lembah), mean",False
+78,chroma01_mean,chroma,"Chroma kelas nada C, mean",False
+79,chroma02_mean,chroma,"Chroma kelas nada C#, mean",False
+80,chroma03_mean,chroma,"Chroma kelas nada D, mean",False
+81,chroma04_mean,chroma,"Chroma kelas nada D#, mean",False
+82,chroma05_mean,chroma,"Chroma kelas nada E, mean",False
+83,chroma06_mean,chroma,"Chroma kelas nada F, mean",False
+84,chroma07_mean,chroma,"Chroma kelas nada F#, mean",False
+85,chroma08_mean,chroma,"Chroma kelas nada G, mean",False
+86,chroma09_mean,chroma,"Chroma kelas nada G#, mean",False
+87,chroma10_mean,chroma,"Chroma kelas nada A, mean",False
+88,chroma11_mean,chroma,"Chroma kelas nada A#, mean",False
+89,chroma12_mean,chroma,"Chroma kelas nada B, mean",False

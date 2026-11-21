@@ -1,0 +1,6 @@
+file,actor,gender,emotion,intensity,proc_duration_s,rms_trim_db,peak_trim,split_utama,max_voiced_prob_default,voiced_frames_longgar,voiced_ratio_longgar,f0_median_longgar,catatan_dengar
+Actor_03/03-01-07-02-01-01-03.wav,3,male,disgust,strong,2.496,-40.2151787083293,0.1082771718502044,train,0.372,126,0.504,145.6,
+Actor_09/03-01-04-02-01-02-09.wav,9,male,sad,strong,2.72,-53.94199177033117,0.0184126365929842,train,0.109,14,0.051,55.8,
+Actor_09/03-01-05-02-01-02-09.wav,9,male,angry,strong,1.888,-19.45704177762845,0.6902706027030945,train,0.28,15,0.079,746.4,
+Actor_21/03-01-07-02-01-01-21.wav,21,male,disgust,strong,2.176,-36.7866728551986,0.1888984143733978,test,0.048,12,0.055,735.7,
+Actor_21/03-01-08-02-02-01-21.wav,21,male,surprised,strong,1.536,-29.46502715075472,0.2666887044906616,test,0.485,0,0.0,0.0,

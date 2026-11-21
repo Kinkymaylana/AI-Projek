@@ -1,0 +1,54 @@
+Ringkasan analisis korelasi (langkah 11, 2026-11-21)
+config_hash correlation: 63bc4a61b4 | fitur: 0c3114fc78
+
+Data: train split utama (aktor 1-16, 960 baris), 90 fitur, Pearson
+Pasangan |r| > 0.8: none 39, peak 36 (dari 4005)
+  versi none: 28 dalam kelompok fitur, 11 antarkelompok
+  fitur dengan minimal satu pasangan: 45 dari 90
+Spearman |r| > 0.8: 37 pasangan, 36 sama dengan Pearson
+
+Kelompok redundan (versi none): 66 kelompok; 17 kelompok berisi >= 2 fitur (41 fitur); 49 fitur berdiri sendiri
+  K1 (4 fitur, wakil dmfcc13_std): mfcc12_std, mfcc13_std, dmfcc12_std, dmfcc13_std
+  K2 (3 fitur, wakil f0_mean): f0_mean, f0_p05, f0_p95
+  K3 (3 fitur, wakil rms_std): rms_mean, rms_std, rms_max
+  K4 (3 fitur, wakil centroid_mean): zcr_mean, centroid_mean, rolloff_mean
+  K5 (3 fitur, wakil centroid_std): zcr_std, centroid_std, rolloff_std
+  K6 (3 fitur, wakil contrast4_mean): contrast4_mean, contrast5_mean, contrast6_mean
+  K7 (2 fitur, wakil mfcc02_std): mfcc02_std, dmfcc02_std
+  K8 (2 fitur, wakil mfcc04_std): mfcc04_std, dmfcc04_std
+  K9 (2 fitur, wakil mfcc10_std): mfcc10_std, dmfcc10_std
+  K10 (2 fitur, wakil mfcc11_std): mfcc11_std, dmfcc11_std
+  K11 (2 fitur, wakil f0_std): f0_std, f0_range
+  K12 (2 fitur, wakil flatness_mean): flatness_mean, flatness_std
+  K13 (2 fitur, wakil chroma01_mean): chroma01_mean, chroma12_mean
+  K14 (2 fitur, wakil chroma02_mean): chroma02_mean, chroma03_mean
+  K15 (2 fitur, wakil chroma04_mean): chroma04_mean, chroma05_mean
+  K16 (2 fitur, wakil chroma07_mean): chroma07_mean, chroma08_mean
+  K17 (2 fitur, wakil chroma10_mean): chroma10_mean, chroma11_mean
+
+15 pasangan |r| tertinggi (versi none):
+  rms_std ~ rms_max: r = 0.987
+  rms_mean ~ rms_std: r = 0.984
+  f0_std ~ f0_range: r = 0.972
+  rms_mean ~ rms_max: r = 0.964
+  zcr_std ~ centroid_std: r = 0.942
+  centroid_mean ~ rolloff_mean: r = 0.935
+  f0_mean ~ f0_p05: r = 0.934
+  mfcc13_std ~ dmfcc13_std: r = 0.926
+  mfcc12_std ~ dmfcc12_std: r = 0.915
+  zcr_mean ~ centroid_mean: r = 0.912
+  contrast4_mean ~ contrast5_mean: r = 0.908
+  chroma02_mean ~ chroma03_mean: r = 0.907
+  flatness_mean ~ flatness_std: r = 0.905
+  f0_mean ~ f0_p95: r = 0.903
+  mfcc11_std ~ dmfcc11_std: r = 0.889
+
+Verifikasi: 7/8 OK
+  [OK] Hanya data train (aktor 1-16, 960 baris) — 960 baris
+  [OK] Matriks 90 × 90, simetris, diagonal 1, tanpa NaN
+  [OK] Setiap fitur masuk tepat satu kelompok redundan
+  [CEK] Sebagian besar pasangan |r| > 0,8 berada dalam kelompok yang sama — 69% dari 39 pasangan
+  [OK] Rata-rata |r| setiap anggota ke kelompoknya ≥ 0,8 (sesuai batas potong) — minimum 0.807
+  [OK] Versi none dan peak hanya berbeda pada korelasi yang melibatkan fitur energi — selisih maks di luar fitur energi 9.88e-05; di fitur energi 0.747
+  [OK] Pemeriksaan Spearman: sebagian besar pasangan Pearson juga tinggi di Spearman — Pearson 39, Spearman 37, sama 36
+  [OK] Uji modul redundancy.py lolos — 4/4

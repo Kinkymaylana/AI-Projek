@@ -1,0 +1,21 @@
+{
+  "config_hash": "dcf3a82fad",
+  "features_hash": "0c3114fc78",
+  "created": "2026-11-21 19:52",
+  "n_test_files": 240,
+  "esc50_clips_used": 240,
+  "files": [
+    "test_noisy_esc50_0db_none.csv",
+    "test_noisy_esc50_0db_peak.csv",
+    "test_noisy_esc50_10db_none.csv",
+    "test_noisy_esc50_10db_peak.csv",
+    "test_noisy_esc50_20db_none.csv",
+    "test_noisy_esc50_20db_peak.csv",
+    "test_noisy_white_0db_none.csv",
+    "test_noisy_white_0db_peak.csv",
+    "test_noisy_white_10db_none.csv",
+    "test_noisy_white_10db_peak.csv",
+    "test_noisy_white_20db_none.csv",
+    "test_noisy_white_20db_peak.csv"
+  ]
+}

@@ -1,0 +1,17 @@
+Audit RAVDESS speech (Audio_Speech_Actors_01-24)
+Sumber: https://zenodo.org/records/1188976 | Lisensi: CC BY-NC-SA 4.0
+
+[OK ] Total file = 1.440 — 1440 file
+[OK ] Tidak ada file gagal dibaca — 0 gagal
+[OK ] Ada 24 aktor — 24 aktor
+[OK ] Setiap aktor punya 60 file — min 60, maks 60
+[OK ] Gender seimbang 12 L / 12 P — {'female': 12, 'male': 12}
+[OK ] Semua file audio-only speech (03-01)
+[OK ] Nomor aktor di nama file = nomor folder
+[OK ] Neutral = 96 file — 96 file
+[OK ] 7 emosi lain masing-masing 192 file — {'calm': 192, 'happy': 192, 'sad': 192, 'angry': 192, 'disgust': 192, 'fearful': 192, 'surprised': 192}
+[OK ] Neutral hanya intensitas normal
+[OK ] Tidak ada nama file ganda
+[OK ] Sample rate seragam — [48000] Hz
+[CEK] Jumlah channel seragam — [1, 2] channel
+Durasi: min 2.94 s, rata-rata 3.70 s, maks 5.27 s, total 88.8 menit

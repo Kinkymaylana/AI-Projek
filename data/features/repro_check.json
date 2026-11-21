@@ -1,0 +1,77 @@
+{
+  "tanggal": "2026-11-21 19:07",
+  "perintah": "python extract_features.py --config config.json --compare data/features",
+  "exit_code": 0,
+  "verifikasi": [
+    "[OK] Skrip selesai dengan exit code 0 \u2014 exit code 0",
+    "[OK] Tidak ada file gagal \u2014 1440 berhasil, 0 gagal",
+    "[OK] Jumlah baris sama dengan tabel resmi \u2014 1440 vs 1440",
+    "[OK] config_hash hasil = config.json \u2014 features 0c3114fc78, preprocessing d930ff28cd",
+    "[OK] features_none.csv: kolom, urutan file, dan kolom info sama",
+    "[OK] features_none.csv: semua nilai fitur identik \u2014 129600/129600 sel sama persis, selisih maks 0",
+    "[OK] features_peak.csv: kolom, urutan file, dan kolom info sama",
+    "[OK] features_peak.csv: semua nilai fitur identik \u2014 129600/129600 sel sama persis, selisih maks 0",
+    "[OK] feature_names.csv sama"
+  ],
+  "meta": {
+    "config_hash": "0c3114fc78",
+    "preprocessing_hash": "d930ff28cd",
+    "n_files": 1440,
+    "n_failed": 0,
+    "script_version": "1.0",
+    "library": {
+      "python": "3.13.18",
+      "numpy": "2.4.6",
+      "pandas": "2.2.3",
+      "librosa": "0.11.0",
+      "soundfile": "0.14.0"
+    }
+  },
+  "perbandingan": {
+    "rtol": 1e-06,
+    "atol": 1e-09,
+    "none": {
+      "file_baru": "/content/drive/MyDrive/project07/data/features_repro/features_none.csv",
+      "file_pembanding": "/content/drive/MyDrive/project07/data/features/features_none.csv",
+      "baris_baru": 1440,
+      "baris_pembanding": 1440,
+      "kolom_sama": true,
+      "baris_dibandingkan": 1440,
+      "urutan_file_sama": true,
+      "info_sama": true,
+      "jumlah_sel": 129600,
+      "sel_identik_persis": 129600,
+      "selisih_abs_maks": 0.0,
+      "selisih_rel_maks": 0.0,
+      "sel_dalam_toleransi": 129600,
+      "fitur_selisih_terbesar": {
+        "mfcc01_mean": 0.0,
+        "mfcc02_mean": 0.0,
+        "mfcc03_mean": 0.0
+      },
+      "identik": true
+    },
+    "peak": {
+      "file_baru": "/content/drive/MyDrive/project07/data/features_repro/features_peak.csv",
+      "file_pembanding": "/content/drive/MyDrive/project07/data/features/features_peak.csv",
+      "baris_baru": 1440,
+      "baris_pembanding": 1440,
+      "kolom_sama": true,
+      "baris_dibandingkan": 1440,
+      "urutan_file_sama": true,
+      "info_sama": true,
+      "jumlah_sel": 129600,
+      "sel_identik_persis": 129600,
+      "selisih_abs_maks": 0.0,
+      "selisih_rel_maks": 0.0,
+      "sel_dalam_toleransi": 129600,
+      "fitur_selisih_terbesar": {
+        "mfcc01_mean": 0.0,
+        "mfcc02_mean": 0.0,
+        "mfcc03_mean": 0.0
+      },
+      "identik": true
+    },
+    "feature_names_sama": true
+  }
+}

@@ -1,0 +1,37 @@
+feature_a,feature_b,r,abs_r,group_a,group_b,jenis
+f0_std,f0_range,0.9724,0.9724,prosodi,prosodi,dalam kelompok
+zcr_std,centroid_std,0.9416,0.9416,zcr,spektral,antarkelompok
+centroid_mean,rolloff_mean,0.9354,0.9354,spektral,spektral,dalam kelompok
+f0_mean,f0_p05,0.9343,0.9343,prosodi,prosodi,dalam kelompok
+mfcc13_std,dmfcc13_std,0.9263,0.9263,mfcc,delta_mfcc,antarkelompok
+mfcc12_std,dmfcc12_std,0.9155,0.9155,mfcc,delta_mfcc,antarkelompok
+zcr_mean,centroid_mean,0.9118,0.9118,zcr,spektral,antarkelompok
+contrast4_mean,contrast5_mean,0.9077,0.9077,contrast,contrast,dalam kelompok
+chroma02_mean,chroma03_mean,0.9071,0.9071,chroma,chroma,dalam kelompok
+flatness_mean,flatness_std,0.9049,0.9049,spektral,spektral,dalam kelompok
+f0_mean,f0_p95,0.903,0.903,prosodi,prosodi,dalam kelompok
+mfcc11_std,dmfcc11_std,0.8887,0.8887,mfcc,delta_mfcc,antarkelompok
+chroma04_mean,chroma05_mean,0.8887,0.8887,chroma,chroma,dalam kelompok
+chroma03_mean,chroma04_mean,0.887,0.887,chroma,chroma,dalam kelompok
+chroma07_mean,chroma08_mean,0.8867,0.8867,chroma,chroma,dalam kelompok
+chroma01_mean,chroma12_mean,0.8858,0.8858,chroma,chroma,dalam kelompok
+chroma11_mean,chroma12_mean,0.8815,0.8815,chroma,chroma,dalam kelompok
+chroma10_mean,chroma11_mean,0.874,0.874,chroma,chroma,dalam kelompok
+chroma09_mean,chroma10_mean,0.8716,0.8716,chroma,chroma,dalam kelompok
+chroma08_mean,chroma09_mean,0.8665,0.8665,chroma,chroma,dalam kelompok
+chroma01_mean,chroma02_mean,0.8658,0.8658,chroma,chroma,dalam kelompok
+chroma05_mean,chroma06_mean,0.8567,0.8567,chroma,chroma,dalam kelompok
+mfcc01_mean,rolloff_mean,-0.8531,0.8531,mfcc,spektral,antarkelompok
+contrast4_mean,contrast6_mean,0.8527,0.8527,contrast,contrast,dalam kelompok
+centroid_std,rolloff_std,0.8484,0.8484,spektral,spektral,dalam kelompok
+mfcc10_std,dmfcc10_std,0.8448,0.8448,mfcc,delta_mfcc,antarkelompok
+contrast5_mean,contrast6_mean,0.8394,0.8394,contrast,contrast,dalam kelompok
+f0_p95,f0_range,0.8383,0.8383,prosodi,prosodi,dalam kelompok
+chroma06_mean,chroma07_mean,0.8346,0.8346,chroma,chroma,dalam kelompok
+mfcc02_std,dmfcc02_std,0.8309,0.8309,mfcc,delta_mfcc,antarkelompok
+mfcc01_mean,centroid_mean,-0.824,0.824,mfcc,spektral,antarkelompok
+dmfcc12_std,dmfcc13_std,0.8187,0.8187,delta_mfcc,delta_mfcc,dalam kelompok
+mfcc04_mean,f0_mean,-0.8169,0.8169,mfcc,prosodi,antarkelompok
+mfcc04_std,dmfcc04_std,0.8122,0.8122,mfcc,delta_mfcc,antarkelompok
+f0_std,f0_p95,0.8091,0.8091,prosodi,prosodi,dalam kelompok
+mfcc12_std,mfcc13_std,0.8081,0.8081,mfcc,mfcc,dalam kelompok

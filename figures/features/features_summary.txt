@@ -1,0 +1,37 @@
+Ringkasan ekstraksi fitur (langkah 5, 2026-11-21)
+config_hash fitur: 0c3114fc78 | config_hash preprocessing: d930ff28cd
+
+File: 1440 | fitur: 90 | versi: none, peak
+Fitur per kelompok: mfcc 26, delta_mfcc 26, prosodi 6, energi 3, zcr 2, spektral 8, contrast 7, chroma 12
+Fitur bergantung volume: 3 (rms_mean, rms_std, rms_max)
+File tanpa frame bersuara: 5
+voiced_ratio median: 0.76
+F0 rata-rata (median, aktor 1-16): laki-laki 149 Hz, perempuan 259 Hz
+
+15 fitur dengan perbedaan rata-rata antaremosi terbesar (deskriptif, aktor 1-16, bukan seleksi):
+   1. rms_max (energi) 1.88
+   2. rms_std (energi) 1.85
+   3. rms_mean (energi) 1.8
+   4. dmfcc04_std (delta_mfcc) 1.72
+   5. mfcc01_mean (mfcc) 1.62
+   6. rolloff_mean (spektral) 1.61
+   7. mfcc04_std (mfcc) 1.57
+   8. centroid_mean (spektral) 1.51
+   9. bandwidth_mean (spektral) 1.4
+  10. dmfcc03_mean (delta_mfcc) 1.39
+  11. dmfcc02_std (delta_mfcc) 1.38
+  12. mfcc01_std (mfcc) 1.37
+  13. chroma09_mean (chroma) 1.35
+  14. rolloff_std (spektral) 1.33
+  15. mfcc02_mean (mfcc) 1.33
+
+Verifikasi: 9/9 OK
+  [OK ] Kedua tabel berisi semua file — 1440 dan 1440 baris
+  [OK ] 90 kolom fitur sesuai feature_names.csv
+  [OK ] Tidak ada NaN / tak hingga
+  [OK ] Kolom info sama dengan metadata.csv
+  [OK ] 87 fitur non-energi identik antara none dan peak — selisih relatif maks 5.6e-04
+  [OK ] Rasio energi peak/none = faktor normalisasi — selisih relatif maks 3.4e-07
+  [OK ] Ekstraksi ulang 5 file acak = hasil tersimpan — 5 file sama
+  [OK ] F0 di 65–500 Hz dan voiced_ratio di 0–1 — F0 mean 78–492 Hz; file tanpa frame bersuara: 5
+  [OK ] Tidak ada fitur konstan — 0 fitur konstan

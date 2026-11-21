@@ -1,0 +1,39 @@
+# ============================================================
+# .gitignore — Proyek 07: Finding the Best Acoustic Features
+# ============================================================
+
+# --- Data audio (besar; dibuat ulang dengan notebook, lihat data/README.md) ---
+data/raw/
+data/processed/
+*.wav
+*.zip
+
+# --- Hasil sementara ---
+data/features_repro*/
+data/features/_checkpoint.pkl
+*.pkl
+
+# --- Model tersimpan yang besar (aktifkan jika ukurannya > 50 MB) ---
+# models/*.joblib
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# --- Jupyter / Colab ---
+.ipynb_checkpoints/
+
+# --- Sistem operasi dan editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# --- Kredensial (jangan pernah di-push) ---
+.env
+*.key
+credentials*.json

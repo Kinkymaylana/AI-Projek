@@ -1,0 +1,24 @@
+Ringkasan EDA RAVDESS speech (1440 file, dimuat mono 16 kHz)
+
+1. Distribusi kelas
+   - neutral 96, calm 192, happy 192, sad 192, angry 192, fearful 192, disgust 192, surprised 192
+   - Rasio kelas terkecil : terbesar = 96 : 192
+   - Gender seimbang di setiap emosi
+
+2. Durasi
+   - Rentang 2.94-5.27 s, median 3.67 s
+   - Median per emosi terpendek: surprised (3.50 s); terpanjang: disgust (3.90 s)
+
+3. Energi (RMS dB, median per emosi, dari pelan ke keras)
+   - calm -48.8, neutral -47.4, sad -44.6, disgust -40.9, surprised -38.3, happy -36.4, fearful -34.6, angry -29.7
+   - Selisih median emosi terkeras dan terpelan: 19.1 dB
+
+4. Hening (trim top_db=30)
+   - Hening awal median 0.96 s, akhir median 0.92 s
+   - Proporsi hening median 51% dari durasi file
+   - Durasi bicara setelah trim: median 1.79 s, min 1.15 s
+
+5. Puncak amplitudo
+   - Median 0.097, rentang 0.005-1.052
+   - File dengan puncak < 0.1: 734 file (51%)
+   - File dengan puncak >= 0.99 (kemungkinan clipping): 18 file

@@ -1,0 +1,25 @@
+Ringkasan preprocessing RAVDESS speech (langkah 4, 2026-11-21)
+Parameter: {"target_sr": 16000, "mono": true, "trim_top_db": 30, "trim_frame_length": 2048, "trim_hop_length": 512, "peak_target": 0.99}
+config_hash: d930ff28cd
+
+File diproses: 1440
+Durasi sebelum trim: median 3.67 s (2.94-5.27 s)
+Durasi sesudah trim: median 1.79 s (1.15-4.25 s)
+Proporsi dibuang: median 51%
+Total durasi: 88.8 menit -> 45.5 menit
+Puncak setelah trim: median 0.097; >= 0,99: 18 file
+Faktor normalisasi puncak: -0.5 sampai 46.8 dB (median 20.2 dB)
+
+Energi (median per emosi / per aktor):
+  none : rentang antaremosi 19.3 dB, antaraktor 18.5 dB
+  peak : rentang antaremosi 1.2 dB, antaraktor 4.5 dB
+
+Verifikasi: 8/8 OK
+  [OK ] Jumlah baris log = jumlah file metadata — 1440 / 1440
+  [OK ] Semua file hasil ada — 1440 file
+  [OK ] Format 16 kHz, mono, float32 (30 file acak)
+  [OK ] Tidak ada NaN / tak hingga (30 file acak)
+  [OK ] Durasi terpendek setelah trim >= 0,5 s — 1.15 s
+  [OK ] Durasi hasil = durasi bicara EDA — selisih maks 0.0000 s
+  [OK ] Proses ulang = file tersimpan (10 file acak) — selisih maks 0.00e+00
+  [OK ] Normalisasi 'peak' menghasilkan puncak 0,99 (10 file acak)
