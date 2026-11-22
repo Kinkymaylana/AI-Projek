@@ -1,0 +1,110 @@
+{
+  "created": "2026-11-22 12:31:30",
+  "owner": "Anggota B",
+  "version": "1.0",
+  "n_features": 90,
+  "split_rule": "train=actors 1-16 (960), validation=actors 17-20 (240); test (21-24) untouched",
+  "cv_scheme": "GroupKFold(n_splits=4) on train actors",
+  "selected_normalization": "peak",
+  "selected_baseline_model": "SVM",
+  "results": {
+    "none": {
+      "SVM": {
+        "best_params": {
+          "clf__C": 5.0,
+          "clf__gamma": 0.001,
+          "clf__kernel": "rbf"
+        },
+        "cv_macro_f1_mean": 0.5034,
+        "cv_macro_f1_std": 0.0213,
+        "val_macro_f1": 0.4846,
+        "val_uar": 0.5039,
+        "val_accuracy": 0.4833,
+        "per_class_f1_val": {
+          "neutral": 0.5417,
+          "calm": 0.6567,
+          "happy": 0.3333,
+          "sad": 0.2985,
+          "angry": 0.6032,
+          "fearful": 0.3636,
+          "disgust": 0.6,
+          "surprised": 0.48
+        },
+        "elapsed_s": 4.37
+      },
+      "RF": {
+        "best_params": {
+          "clf__max_depth": 10,
+          "clf__max_features": 0.3,
+          "clf__min_samples_split": 2,
+          "clf__n_estimators": 100
+        },
+        "cv_macro_f1_mean": 0.4517,
+        "cv_macro_f1_std": 0.0373,
+        "val_macro_f1": 0.4316,
+        "val_uar": 0.4414,
+        "val_accuracy": 0.4625,
+        "per_class_f1_val": {
+          "neutral": 0.1905,
+          "calm": 0.5897,
+          "happy": 0.2712,
+          "sad": 0.4,
+          "angry": 0.5846,
+          "fearful": 0.3582,
+          "disgust": 0.6027,
+          "surprised": 0.4561
+        },
+        "elapsed_s": 41.13
+      }
+    },
+    "peak": {
+      "SVM": {
+        "best_params": {
+          "clf__C": 1.0,
+          "clf__gamma": 0.005,
+          "clf__kernel": "rbf"
+        },
+        "cv_macro_f1_mean": 0.4901,
+        "cv_macro_f1_std": 0.0328,
+        "val_macro_f1": 0.5165,
+        "val_uar": 0.5352,
+        "val_accuracy": 0.5167,
+        "per_class_f1_val": {
+          "neutral": 0.52,
+          "calm": 0.6957,
+          "happy": 0.4348,
+          "sad": 0.3175,
+          "angry": 0.6061,
+          "fearful": 0.3158,
+          "disgust": 0.7419,
+          "surprised": 0.5
+        },
+        "elapsed_s": 1.54
+      },
+      "RF": {
+        "best_params": {
+          "clf__max_depth": null,
+          "clf__max_features": 0.3,
+          "clf__min_samples_split": 5,
+          "clf__n_estimators": 400
+        },
+        "cv_macro_f1_mean": 0.4421,
+        "cv_macro_f1_std": 0.048,
+        "val_macro_f1": 0.4644,
+        "val_uar": 0.4688,
+        "val_accuracy": 0.4875,
+        "per_class_f1_val": {
+          "neutral": 0.1765,
+          "calm": 0.6389,
+          "happy": 0.4727,
+          "sad": 0.4828,
+          "angry": 0.4444,
+          "fearful": 0.425,
+          "disgust": 0.6301,
+          "surprised": 0.4444
+        },
+        "elapsed_s": 44.68
+      }
+    }
+  }
+}

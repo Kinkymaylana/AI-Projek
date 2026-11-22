@@ -1,0 +1,5 @@
+version,model,cv_macro_f1_mean,cv_macro_f1_std,val_macro_f1,val_uar,val_accuracy,elapsed_s,best_params
+none,SVM,0.5034,0.0213,0.4846,0.5039,0.4833,4.37,"{'clf__C': 5.0, 'clf__gamma': 0.001, 'clf__kernel': 'rbf'}"
+none,RF,0.4517,0.0373,0.4316,0.4414,0.4625,41.13,"{'clf__max_depth': 10, 'clf__max_features': 0.3, 'clf__min_samples_split': 2, 'clf__n_estimators': 100}"
+peak,SVM,0.4901,0.0328,0.5165,0.5352,0.5167,1.54,"{'clf__C': 1.0, 'clf__gamma': 0.005, 'clf__kernel': 'rbf'}"
+peak,RF,0.4421,0.048,0.4644,0.4688,0.4875,44.68,"{'clf__max_depth': None, 'clf__max_features': 0.3, 'clf__min_samples_split': 5, 'clf__n_estimators': 400}"
