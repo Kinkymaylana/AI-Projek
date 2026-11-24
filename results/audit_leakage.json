@@ -1,0 +1,77 @@
+{
+  "audited_at": "2026-11-24T13:44:22",
+  "results": [
+    {
+      "no": 1,
+      "check": "Split utama: aktor tidak tumpang tindih, 24 aktor terpakai",
+      "status": "OK",
+      "detail": "train [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], validation [17, 18, 19, 20], test [21, 22, 23, 24]"
+    },
+    {
+      "no": 1,
+      "check": "Partisi P0-P4: aktor tidak tumpang tindih",
+      "status": "OK",
+      "detail": "5 partisi valid; P0 sama dengan split utama: True"
+    },
+    {
+      "no": 2,
+      "check": "Tabel fitur: 1.440 baris unik, tanpa NaN",
+      "status": "OK",
+      "detail": "1440 baris, file unik True, NaN 0"
+    },
+    {
+      "no": 2,
+      "check": "Setiap split punya 2 gender dan 8 emosi",
+      "status": "OK",
+      "detail": "train: 960 file, gender {'male': 480, 'female': 480}, 8 emosi; validation: 240 file, gender {'male': 120, 'female': 120}, 8 emosi; test: 240 file, gender {'male': 120, 'female': 120}, 8 emosi"
+    },
+    {
+      "no": 3,
+      "check": "Model utama: StandardScaler di dalam Pipeline dan di-fit pada train saja",
+      "status": "OK",
+      "detail": "langkah ['StandardScaler', 'SVC']; scaler melihat 960 sampel, train P0 = 960 file; trained_on = P0 train (actors 1-16, 960 files)"
+    },
+    {
+      "no": 3,
+      "check": "Model final models/*.joblib: di-fit pada train + validation saja (aktor 1-20)",
+      "status": "OK",
+      "detail": "train + validation = 1200 file; rf_all90_final.joblib: scaler 1200 sampel, k=90; rf_sa52_final.joblib: scaler 1200 sampel, k=52; svm_all90_final.joblib: scaler 1200 sampel, k=90; svm_sa52_final.joblib: scaler 1200 sampel, k=52"
+    },
+    {
+      "no": 3,
+      "check": "Objective SA: scaler di-fit per fold GroupKFold di dalam train",
+      "status": "OK",
+      "detail": "sa_feature_selection._precompute_scaled_folds memakai fold train saja"
+    },
+    {
+      "no": 4,
+      "check": "Kode dan notebook Anggota B tidak membaca data test",
+      "status": "OK",
+      "detail": "10 file diperiksa (progres_anggota_b/notebooks/Langkah_AnggotaB_01_Baseline_Normalisasi.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_02_SA_Utama.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_03_SA_Stabilitas.ipynb, progres_anggota_b/scripts/run_baseline.py, progres_anggota_b/scripts/run_sa_main.py, progres_anggota_b/scripts/run_sa_stability.py, progres_anggota_b/src/baseline.py, progres_anggota_b/src/inference.py, progres_anggota_b/src/sa_feature_selection.py, train_final_models.py); bagian test dari split_frames selalu dibuang (_)"
+    },
+    {
+      "no": 4,
+      "check": "Skrip yang menjalankan eksperimen B tersedia untuk diaudit",
+      "status": "OK",
+      "detail": "semua tersedia"
+    },
+    {
+      "no": 4,
+      "check": "Run stabilitas tidak memakai aktor test utama sebelum evaluasi akhir",
+      "status": "WARN",
+      "detail": "run partisi P1, P2, P3, P4 memakai aktor [21, 22, 23, 24] di train/validation (P4: validation). partitions.json meminta run ini setelah hasil utama final. Model utama P0 tidak terpengaruh, tetapi val_macro_f1 P4 di subsets.json dihitung pada aktor test, jadi tidak boleh dipakai untuk keputusan apa pun."
+    },
+    {
+      "no": 5,
+      "check": "Mutual information dihitung di train saja",
+      "status": "PENDING",
+      "detail": "pembanding MI (langkah 10 Anggota A) belum ada"
+    },
+    {
+      "no": 6,
+      "check": "Hasil test tercatat (hanya oleh C, sekali)",
+      "status": "OK",
+      "detail": "test belum dievaluasi"
+    }
+  ]
+}
