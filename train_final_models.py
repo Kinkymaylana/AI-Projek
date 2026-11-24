@@ -7,12 +7,13 @@ Aturan anti-leakage:
   - Hyperparameter dan subset fitur diambil langsung dari hasil eksperimen
     Anggota B (baseline_results.json & sa_main_results.json) tanpa tuning ulang.
 
-Model final yang dihasilkan (tersimpan di folder models/):
+Model final yang dihasilkan (tersimpan di folder models/ root):
   1. svm_all90_final.joblib : SVM RBF (90 fitur, normalisasi peak)
   2. svm_sa52_final.joblib  : SVM RBF (52 fitur subset SA, normalisasi peak)
-  3. rf_all90_final.joblib  : Random Forest (90 fitur, normalisasi peak)
-  4. rf_sa52_final.joblib   : Random Forest (52 fitur subset SA, normalisasi peak)
-  5. final_models_manifest.json : Ringkasan metadata seluruh model final
+  3. svm_mi52_final.joblib  : SVM RBF (52 fitur top-k Mutual Information, normalisasi peak)
+  4. rf_all90_final.joblib  : Random Forest (90 fitur, normalisasi peak)
+  5. rf_sa52_final.joblib   : Random Forest (52 fitur subset SA, normalisasi peak)
+  6. final_models_manifest.json : Ringkasan metadata seluruh model final
 
 Format setiap berkas .joblib kompatibel langsung dengan
 progres_anggota_b/src/inference.py (EmotionPredictor).
@@ -27,7 +28,8 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GroupKFold, cross_val_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
+from sklearn.model_selection import GridSearchCV, GroupKFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -106,7 +108,8 @@ def train_and_save_model(
         'test_actors_untouched': list(test_actors),
         'n_train_val_samples': int(len(y_tv)),
         'cv5_trainval_macro_f1_mean': round(float(np.mean(cv_scores)), 4),
-        'cv5_trainval_macro_f1_std': round(float(np.std(cv_scores)), 4),
+        'cv5_trainval_macro_f1_std': round(float(np.std(cv_scores, ddof=0)), 4),
+        'cv5_trainval_macro_f1_std_sample': round(float(np.std(cv_scores, ddof=1)), 4),
         'fit_elapsed_s': elapsed_s,
         'created': created,
     }
@@ -172,6 +175,50 @@ def main():
     sa_names = [feat_names[i] for i in sa_indices]
     assert sa_names == list(sa_data['selected_feature_names']), 'Urutan nama fitur SA tidak cocok!'
 
+    # Baca 52 fitur top-k Mutual Information dari Anggota A (in_top_k == True)
+    mi_path = os.path.join(REPO_DIR, 'data', 'analysis', f'mi_scores_{norm_ver}.csv')
+    mi_df = pd.read_csv(mi_path)
+    mi_top = mi_df[mi_df['in_top_k'] == True].sort_values('index')  # noqa: E712
+    mi_indices = [int(i) for i in mi_top['index'].tolist()]
+    mi_names = [feat_names[i] for i in mi_indices]
+    assert len(mi_indices) == len(sa_indices), (
+        f'Jumlah fitur MI ({len(mi_indices)}) harus sama dengan SA ({len(sa_indices)})!'
+    )
+    assert mi_names == mi_top['name'].tolist(), 'Urutan nama fitur MI tidak cocok dengan feature_names.csv!'
+
+    # Tuning SVM pada subset MI-52 hanya di TRAIN (aktor 1-16, 4-fold GroupKFold) — protokol identik dengan SA-52
+    X_tr, y_tr, g_tr = tr[feat_names].values, tr['emotion'].values, tr['actor'].values
+    X_va, y_va = va[feat_names].values, va['emotion'].values
+    mi_search = GridSearchCV(
+        Pipeline([('scaler', StandardScaler()), ('clf', SVC(class_weight='balanced', random_state=42))]),
+        param_grid=[
+            {'clf__kernel': ['rbf'], 'clf__C': [0.5, 1.0, 2.0, 5.0, 10.0], 'clf__gamma': ['scale', 'auto', 0.01, 0.005]},
+            {'clf__kernel': ['linear'], 'clf__C': [0.05, 0.1, 0.5, 1.0, 5.0]},
+        ],
+        scoring='f1_macro',
+        cv=GroupKFold(n_splits=4),
+        n_jobs=-1,
+        refit=True,
+    )
+    mi_search.fit(X_tr[:, mi_indices], y_tr, groups=g_tr)
+    svm_mi52_params = {
+        k.replace('clf__', ''): (v if not isinstance(v, np.generic) else v.item())
+        for k, v in mi_search.best_params_.items()
+    }
+    mi_va_pred = mi_search.best_estimator_.predict(X_va[:, mi_indices])
+    mi_val_summary = {
+        'best_params': svm_mi52_params,
+        'cv4_train_macro_f1': round(float(mi_search.best_score_), 4),
+        'val_macro_f1': round(float(f1_score(y_va, mi_va_pred, average='macro')), 4),
+        'val_uar': round(float(balanced_accuracy_score(y_va, mi_va_pred)), 4),
+        'val_accuracy': round(float(accuracy_score(y_va, mi_va_pred)), 4),
+    }
+    print(
+        f'Tuning SVM_MI52 (train 4-fold GroupKFold): params={svm_mi52_params} | '
+        f'CV F1={mi_val_summary["cv4_train_macro_f1"]:.4f} | '
+        f'Val F1={mi_val_summary["val_macro_f1"]:.4f} | Val UAR={mi_val_summary["val_uar"]:.4f}'
+    )
+
     svm_all90_params = _clean_params(bl_data['results'][norm_ver]['SVM']['best_params'])
     svm_sa52_params = _clean_params(sa_data['validation_comparison']['svm_sa_tuned_params'])
     rf_params = _clean_params(bl_data['results'][norm_ver]['RF']['best_params'])
@@ -179,7 +226,7 @@ def main():
     out_dir = os.path.join(REPO_DIR, 'models')
     os.makedirs(out_dir, exist_ok=True)
 
-    print(f'Melatih model final pada train + validation (normalisasi={norm_ver}, n={len(tv)}, aktor={train_val_actors[0]}..{train_val_actors[-1]})')
+    print(f'\nMelatih model final pada train + validation (normalisasi={norm_ver}, n={len(tv)}, aktor={train_val_actors[0]}..{train_val_actors[-1]})')
     print(f'Aktor TEST tetap dikunci dan tidak disentuh: {test_actors}\n')
 
     manifest = {
@@ -193,14 +240,16 @@ def main():
             'splits': 'data/splits.json',
             'baseline_results': 'progres_anggota_b/results/baseline_results.json',
             'sa_main_results': 'progres_anggota_b/results/sa_main_results.json',
+            'mi_scores': f'data/analysis/mi_scores_{norm_ver}.csv',
         },
+        'mi52_validation_summary': mi_val_summary,
         'models': {},
     }
 
     specs = [
         (
             'SVM_all90',
-            'baseline/svm_all90_final.joblib',
+            'svm_all90_final.joblib',
             _build_svm_pipeline(svm_all90_params, probability=True),
             all90_indices,
             feat_names,
@@ -208,15 +257,23 @@ def main():
         ),
         (
             'SVM_SA52',
-            'sa/svm_sa52_final.joblib',
+            'svm_sa52_final.joblib',
             _build_svm_pipeline(svm_sa52_params, probability=True),
             sa_indices,
             sa_names,
             {**svm_sa52_params, 'class_weight': 'balanced', 'probability': True, 'random_state': 42},
         ),
         (
+            'SVM_MI52',
+            'svm_mi52_final.joblib',
+            _build_svm_pipeline(svm_mi52_params, probability=True),
+            mi_indices,
+            mi_names,
+            {**svm_mi52_params, 'class_weight': 'balanced', 'probability': True, 'random_state': 42},
+        ),
+        (
             'RF_all90',
-            'baseline/rf_all90_final.joblib',
+            'rf_all90_final.joblib',
             _build_rf_pipeline(rf_params),
             all90_indices,
             feat_names,
@@ -224,7 +281,7 @@ def main():
         ),
         (
             'RF_SA52',
-            'sa/rf_sa52_final.joblib',
+            'rf_sa52_final.joblib',
             _build_rf_pipeline(rf_params),
             sa_indices,
             sa_names,

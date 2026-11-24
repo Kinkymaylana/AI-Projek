@@ -1,5 +1,5 @@
 {
-  "audited_at": "2026-11-24T18:41:19",
+  "audited_at": "2026-11-24T19:29:59",
   "results": [
     {
       "no": 1,
@@ -33,9 +33,9 @@
     },
     {
       "no": 3,
-      "check": "Model final models/ (11 file): di-fit pada train + validation saja (aktor 1-20)",
+      "check": "Model final models/ (12 file): di-fit pada train + validation saja (aktor 1-20)",
       "status": "OK",
-      "detail": "train + validation = 1200 file; ensemble/ensemble_svm_rf_all90_final.joblib: scaler 1200 sampel, k=90; ensemble/ensemble_svm_rf_sa52_final.joblib: scaler 1200 sampel, k=52; hill_climbing/svm_hc_final.joblib: scaler 1200 sampel, k=48; mlp_full90.joblib: scaler 1200 sampel, k=90, aktor tidak dicatat; mlp_mi52.joblib: scaler 1200 sampel, k=52, aktor tidak dicatat; mlp_sa52.joblib: scaler 1200 sampel, k=52, aktor tidak dicatat; random_subset/svm_random52_median_final.joblib: scaler 1200 sampel, k=52; rf_all90_final.joblib: scaler 1200 sampel, k=90; rf_sa52_final.joblib: scaler 1200 sampel, k=52; svm_all90_final.joblib: scaler 1200 sampel, k=90; svm_sa52_final.joblib: scaler 1200 sampel, k=52"
+      "detail": "train + validation = 1200 file; ensemble/ensemble_svm_rf_all90_final.joblib: scaler 1200 sampel, k=90; ensemble/ensemble_svm_rf_sa52_final.joblib: scaler 1200 sampel, k=52; hill_climbing/svm_hc_final.joblib: scaler 1200 sampel, k=48; mlp_full90.joblib: scaler 1200 sampel, k=90, aktor tidak dicatat; mlp_mi52.joblib: scaler 1200 sampel, k=52, aktor tidak dicatat; mlp_sa52.joblib: scaler 1200 sampel, k=52, aktor tidak dicatat; random_subset/svm_random52_median_final.joblib: scaler 1200 sampel, k=52; rf_all90_final.joblib: scaler 1200 sampel, k=90; rf_sa52_final.joblib: scaler 1200 sampel, k=52; svm_all90_final.joblib: scaler 1200 sampel, k=90; svm_mi52_final.joblib: scaler 1200 sampel, k=52; svm_sa52_final.joblib: scaler 1200 sampel, k=52"
     },
     {
       "no": 3,
@@ -47,7 +47,7 @@
       "no": 4,
       "check": "Kode dan notebook Anggota B tidak membaca data test",
       "status": "OK",
-      "detail": "11 file diperiksa (progres_anggota_b/notebooks/Langkah_AnggotaB_01_Baseline_Normalisasi.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_02_SA_Utama.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_03_SA_Stabilitas.ipynb, progres_anggota_b/scripts/run_baseline.py, progres_anggota_b/scripts/run_sa_main.py, progres_anggota_b/scripts/run_sa_stability.py, progres_anggota_b/src/baseline.py, progres_anggota_b/src/inference.py, progres_anggota_b/src/sa_feature_selection.py, run_comparators_and_curves.py, train_final_models.py); bagian test dari split_frames selalu dibuang (_)"
+      "detail": "12 file diperiksa (progres_anggota_b/notebooks/Langkah_AnggotaB_01_Baseline_Normalisasi.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_02_SA_Utama.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_03_SA_Stabilitas.ipynb, progres_anggota_b/scripts/generate_figures_en.py, progres_anggota_b/scripts/run_baseline.py, progres_anggota_b/scripts/run_sa_main.py, progres_anggota_b/scripts/run_sa_stability.py, progres_anggota_b/src/baseline.py, progres_anggota_b/src/inference.py, progres_anggota_b/src/sa_feature_selection.py, run_comparators_and_curves.py, train_final_models.py); bagian test dari split_frames selalu dibuang (_)"
     },
     {
       "no": 4,
