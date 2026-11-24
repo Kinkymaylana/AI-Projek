@@ -93,6 +93,7 @@ AI-Projek/
 │   ├── plot_lambda_tradeoff.py   gambar trade-off λ dari sweep B (C)
 │   └── error_analysis.py     pola kesalahan dan file contoh dari prediksi test tersimpan (C)
 ├── progres_anggota_b/        baseline, SA, model, inference (B; akan dipindah ke struktur utama)
+├── paper/                    mini-paper IEEE: main.tex, references.bib (integrasi C)
 ├── tests/                    tes unit (C)
 ├── results/                  main_table.csv, ringkasan stabilitas, hasil audit
 ├── figures/                  gambar EDA, fitur, split, noise, korelasi, stabilitas
@@ -128,7 +129,8 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Uji noise (C) | Selesai 24 November 2026; `results/noise_eval/` |
 | Matriks transfer 5 × 5, trade-off λ, gambar paper (C) | Selesai |
 | Error analysis (C) | Selesai, termasuk catatan dengar 4 file |
-| Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
+| Mini-paper IEEE (semua, integrasi C) | Draf v0.1 di `paper/` lengkap; menunggu nama penulis, review A/B, kompilasi Overleaf |
+| Slide presentasi (semua) | Belum |
 
 ## Referensi utama
 

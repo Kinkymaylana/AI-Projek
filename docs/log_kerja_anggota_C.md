@@ -490,6 +490,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | Skrip uji noise di-push (`324ff3f`). **Uji noise sekali** dijalankan Anggota C (20.45 WIB): white noise meruntuhkan SVM RBF ke satu kelas di semua SNR; ESC-50 turun bertahap; SA-52 tidak lebih rapuh daripada 90 fitur |
 | 24 November 2026 | Matriks transfer 5 × 5 (+ baris 90 fitur): diagonal 0,473, luar diagonal 0,484, 90 fitur 0,489. Gambar trade-off λ dua panel untuk paper |
 | 24 November 2026 | Error analysis dari prediksi tersimpan dan audio lokal aktor 21–24: pola kesalahan dan 4 file contoh (sad → disgust/neutral/happy, disgust → angry) |
+| 24 November 2026 | Draf paper IEEE v0.1 (`paper/main.tex`, `references.bib`, 17 referensi): semua bagian terisi kecuali Discussion, nama penulis, dan URL repo. Catatan untuk B: simpangan baku CV SVM_MI52 identik dengan SVM_all90 di manifest |
 
 ---
 
@@ -519,7 +520,9 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 12: demo alpha 4 tab berjalan
 - [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA
 - [ ] Langkah 12: uji mikrofon dan file RAVDESS aktor 1–20; jalan di Colab/Spaces
-- [ ] Langkah 13: integrasi paper IEEE dan slide
+- [x] Langkah 13: draf paper IEEE v0.1 di `paper/`
+- [x] Langkah 13: paragraf Discussion
+- [ ] Langkah 13: nama dan afiliasi, review A/B, kompilasi Overleaf, slide
 - [ ] Bahasa paper (Inggris) dikonfirmasi ke dosen
 - [x] Gambar stabilitas berbahasa Inggris untuk paper
 - [ ] `reproduce.ipynb` (Definition of done)
