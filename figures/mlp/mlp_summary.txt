@@ -1,0 +1,31 @@
+Ringkasan mini-eksperimen MLP (langkah 12, 2026-11-24)
+config_hash mlp: d03ab6d497 | fitur: 0c3114fc78 | scikit-learn 1.6.1
+
+Data: features_peak.csv; tuning di train (aktor 1-16), penilaian di validation (aktor 17-20); test tidak dipakai
+MLP: 2 hidden layer, ReLU, Adam, early stopping; tuning GroupKFold(4); 5 seed
+
+Semua 90 fitur   k=90  MLP layer (256, 128) alpha 1.0 | CV F1 0.4682 | val F1 0.4769 ± 0.0261 | val UAR 0.4719 | SVM val F1 0.5144
+SA (52 fitur)    k=52  MLP layer (256, 128) alpha 0.01 | CV F1 0.4639 | val F1 0.4771 ± 0.0244 | val UAR 0.4766 | SVM val F1 0.4995
+MI top-52        k=52  MLP layer (128, 64) alpha 0.01 | CV F1 0.4634 | val F1 0.4523 ± 0.0284 | val UAR 0.4500 | SVM val F1 0.4658
+
+F1 per emosi (MLP, rata-rata 5 seed):
+           Semua 90 fitur  SA (52 fitur)  MI top-52
+neutral             0.379          0.383      0.288
+calm                0.556          0.557      0.548
+happy               0.397          0.392      0.318
+sad                 0.298          0.308      0.366
+angry               0.668          0.620      0.650
+fearful             0.366          0.402      0.376
+disgust             0.660          0.679      0.658
+surprised           0.491          0.476      0.414
+
+Model final (train + validation): models/mlp_full90.joblib, models/mlp_sa52.joblib, models/mlp_mi52.joblib
+
+Verifikasi: 7/7 OK
+  [OK] Tuning hanya memakai train (aktor 1-16, 960 baris)
+  [OK] Setiap lipatan GroupKFold memisahkan aktor (tidak ada aktor di train dan validasi lipatan sekaligus)
+  [OK] Data test (aktor 21-24) tidak dipakai di tuning, penilaian, maupun model final
+  [OK] Model final dilatih di train + validation (aktor 1-20, 1.200 baris)
+  [OK] Setiap subset dinilai dengan 5 seed
+  [OK] 3 model final bisa dimuat ulang dan memprediksi label 0-7
+  [OK] SVM pembanding mereproduksi angka langkah 10 dan Anggota B — full90 0.5144, sa52 0.4995

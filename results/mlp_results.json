@@ -1,0 +1,132 @@
+{
+  "created": "2026-11-24 06:50",
+  "owner": "Anggota A",
+  "config_hash": "d03ab6d497",
+  "sklearn_version": "1.6.1",
+  "normalization": "peak",
+  "protocol": "tuning GroupKFold(4) di train; val macro F1 rata-rata 5 seed; model final di train+val",
+  "label_classes": [
+    "neutral",
+    "calm",
+    "happy",
+    "sad",
+    "angry",
+    "fearful",
+    "disgust",
+    "surprised"
+  ],
+  "results": {
+    "full90": {
+      "subset": "Semua 90 fitur",
+      "k": 90,
+      "mlp_val_macro_f1_mean": 0.4769,
+      "mlp_val_macro_f1_std": 0.0261,
+      "mlp_val_macro_f1_per_seed": [
+        0.4933,
+        0.4715,
+        0.5065,
+        0.43,
+        0.4832
+      ],
+      "mlp_val_uar_mean": 0.4719,
+      "mlp_val_accuracy_mean": 0.4817,
+      "svm_val_macro_f1": 0.5144,
+      "svm_val_uar": 0.5195,
+      "tuning_hidden": [
+        256,
+        128
+      ],
+      "tuning_alpha": 1.0,
+      "tuning_cv_macro_f1": 0.4682,
+      "tuning_cv_macro_f1_std": 0.0421,
+      "tuning_elapsed_s": 46.2
+    },
+    "sa52": {
+      "subset": "SA (52 fitur)",
+      "k": 52,
+      "mlp_val_macro_f1_mean": 0.4771,
+      "mlp_val_macro_f1_std": 0.0244,
+      "mlp_val_macro_f1_per_seed": [
+        0.4473,
+        0.4552,
+        0.5046,
+        0.506,
+        0.4725
+      ],
+      "mlp_val_uar_mean": 0.4766,
+      "mlp_val_accuracy_mean": 0.4842,
+      "svm_val_macro_f1": 0.4995,
+      "svm_val_uar": 0.5078,
+      "tuning_hidden": [
+        256,
+        128
+      ],
+      "tuning_alpha": 0.01,
+      "tuning_cv_macro_f1": 0.4639,
+      "tuning_cv_macro_f1_std": 0.0599,
+      "tuning_elapsed_s": 37.3
+    },
+    "mi52": {
+      "subset": "MI top-52",
+      "k": 52,
+      "mlp_val_macro_f1_mean": 0.4523,
+      "mlp_val_macro_f1_std": 0.0284,
+      "mlp_val_macro_f1_per_seed": [
+        0.4127,
+        0.4365,
+        0.4578,
+        0.4556,
+        0.4991
+      ],
+      "mlp_val_uar_mean": 0.45,
+      "mlp_val_accuracy_mean": 0.4642,
+      "svm_val_macro_f1": 0.4658,
+      "svm_val_uar": 0.4648,
+      "tuning_hidden": [
+        128,
+        64
+      ],
+      "tuning_alpha": 0.01,
+      "tuning_cv_macro_f1": 0.4634,
+      "tuning_cv_macro_f1_std": 0.0375,
+      "tuning_elapsed_s": 37.4
+    }
+  },
+  "model_files": {
+    "full90": "models/mlp_full90.joblib",
+    "sa52": "models/mlp_sa52.joblib",
+    "mi52": "models/mlp_mi52.joblib"
+  },
+  "per_class_f1_val_mlp": {
+    "full90": {
+      "neutral": 0.3795,
+      "calm": 0.5563,
+      "happy": 0.3969,
+      "sad": 0.298,
+      "angry": 0.6675,
+      "fearful": 0.3662,
+      "disgust": 0.6599,
+      "surprised": 0.4909
+    },
+    "sa52": {
+      "neutral": 0.3834,
+      "calm": 0.5569,
+      "happy": 0.3917,
+      "sad": 0.3082,
+      "angry": 0.6201,
+      "fearful": 0.4015,
+      "disgust": 0.6794,
+      "surprised": 0.4757
+    },
+    "mi52": {
+      "neutral": 0.2876,
+      "calm": 0.5479,
+      "happy": 0.3181,
+      "sad": 0.3663,
+      "angry": 0.6503,
+      "fearful": 0.3764,
+      "disgust": 0.6582,
+      "surprised": 0.4139
+    }
+  }
+}

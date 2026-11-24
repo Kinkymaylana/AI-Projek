@@ -1,0 +1,208 @@
+{
+  "created": "2026-11-24 06:55",
+  "owner": "Anggota A",
+  "kmp": {
+    "seg_ms": 50,
+    "threshold_semitone": 0.5,
+    "n_files": 60,
+    "actors": [
+      1,
+      2
+    ],
+    "kmp_equals_naive": true,
+    "table": [
+      {
+        "L": 4,
+        "ditemukan persis, sama emosi": 0.4,
+        "ditemukan persis, beda emosi": 0.278,
+        "jarak edit relatif, sama emosi": 0.168,
+        "jarak edit relatif, beda emosi": 0.205,
+        "jumlah pasangan": 29
+      },
+      {
+        "L": 6,
+        "ditemukan persis, sama emosi": 0.098,
+        "ditemukan persis, beda emosi": 0.051,
+        "jarak edit relatif, sama emosi": 0.25,
+        "jarak edit relatif, beda emosi": 0.275,
+        "jumlah pasangan": 29
+      },
+      {
+        "L": 8,
+        "ditemukan persis, sama emosi": 0.019,
+        "ditemukan persis, beda emosi": 0.005,
+        "jarak edit relatif, sama emosi": 0.247,
+        "jarak edit relatif, beda emosi": 0.311,
+        "jumlah pasangan": 27
+      },
+      {
+        "L": 10,
+        "ditemukan persis, sama emosi": 0.0,
+        "ditemukan persis, beda emosi": 0.0,
+        "jarak edit relatif, sama emosi": 0.25,
+        "jarak edit relatif, beda emosi": 0.328,
+        "jumlah pasangan": 21
+      },
+      {
+        "L": 12,
+        "ditemukan persis, sama emosi": 0.0,
+        "ditemukan persis, beda emosi": 0.0,
+        "jarak edit relatif, sama emosi": 0.257,
+        "jarak edit relatif, beda emosi": 0.358,
+        "jumlah pasangan": 17
+      }
+    ],
+    "kesimpulan": [
+      "Bahkan untuk kalimat, aktor, dan emosi yang sama, pola 4 token (200 ms) hanya ditemukan persis pada 40% kasus, dan pola 12 token pada 0% kasus.",
+      "Penyebabnya: ucapan manusia tidak pernah persis sama. Sedikit perbedaan tempo menggeser batas potongan 50 ms, perubahan nada di dekat ambang 0,5 semitone berpindah antara N/T dan D, dan frame tak bersuara menyisipkan U di posisi berbeda. Satu token yang berbeda saja sudah membuat KMP gagal.",
+      "Pola pendek yang masih sering ditemukan juga tidak membedakan emosi: 40% (sama emosi) vs 28% (beda emosi), karena pola pendek naik-turun-datar lazim muncul di banyak ujaran, apa pun emosinya.",
+      "Pencocokan mendekati lebih masuk akal: pada L = 8, jarak edit relatif ke pengulangan emosi yang sama 0.25 vs 0.31 ke emosi lain. Selisihnya kecil, jadi bentuk kontur saja lemah untuk mengenali emosi.",
+      "Keputusan: tidak dipakai di metode final. Statistik ringkas F0 (rata-rata, simpangan baku, persentil, rentang) di 90 fitur lebih tahan terhadap variasi ujaran dibanding urutan token persis."
+    ]
+  },
+  "fuzzy": {
+    "arousal_map": {
+      "neutral": "rendah",
+      "calm": "rendah",
+      "sad": "rendah",
+      "disgust": "sedang",
+      "happy": "tinggi",
+      "angry": "tinggi",
+      "fearful": "tinggi",
+      "surprised": "tinggi"
+    },
+    "membership_points_p10_p50_p90": {
+      "f0_female": [
+        202.56,
+        258.66,
+        375.28
+      ],
+      "f0_male": [
+        102.68,
+        148.96,
+        270.6
+      ],
+      "f0_semua": [
+        113.71,
+        219.33,
+        338.97
+      ],
+      "rms_semua": [
+        -51.07,
+        -39.98,
+        -26.56
+      ]
+    },
+    "rules": {
+      "F0 rendah & RMS rendah": "rendah",
+      "F0 rendah & RMS sedang": "rendah",
+      "F0 rendah & RMS tinggi": "sedang",
+      "F0 sedang & RMS rendah": "rendah",
+      "F0 sedang & RMS sedang": "sedang",
+      "F0 sedang & RMS tinggi": "tinggi",
+      "F0 tinggi & RMS rendah": "sedang",
+      "F0 tinggi & RMS sedang": "tinggi",
+      "F0 tinggi & RMS tinggi": "tinggi"
+    },
+    "outputs": {
+      "rendah": 0.0,
+      "sedang": 0.5,
+      "tinggi": 1.0
+    },
+    "examples": [
+      {
+        "file": "Actor_01/03-01-02-01-01-01-01.wav",
+        "emosi": "calm normal",
+        "arousal seharusnya": "rendah",
+        "F0 mean (Hz)": 117.7,
+        "RMS (dB)": -49.5,
+        "F0 (r/s/t)": "0.67/0.33/0.00",
+        "RMS (r/s/t)": "0.86/0.14/0.00",
+        "skor": 0.05,
+        "hasil fuzzy": "rendah",
+        "benar": true
+      },
+      {
+        "file": "Actor_01/03-01-04-01-01-01-01.wav",
+        "emosi": "sad normal",
+        "arousal seharusnya": "rendah",
+        "F0 mean (Hz)": 125.5,
+        "RMS (dB)": -47.8,
+        "F0 (r/s/t)": "0.51/0.49/0.00",
+        "RMS (r/s/t)": "0.70/0.30/0.00",
+        "skor": 0.09,
+        "hasil fuzzy": "rendah",
+        "benar": true
+      },
+      {
+        "file": "Actor_01/03-01-03-02-01-01-01.wav",
+        "emosi": "happy strong",
+        "arousal seharusnya": "tinggi",
+        "F0 mean (Hz)": 215.1,
+        "RMS (dB)": -37.7,
+        "F0 (r/s/t)": "0.00/0.46/0.54",
+        "RMS (r/s/t)": "0.00/0.83/0.17",
+        "skor": 0.83,
+        "hasil fuzzy": "tinggi",
+        "benar": true
+      },
+      {
+        "file": "Actor_01/03-01-05-02-01-01-01.wav",
+        "emosi": "angry strong",
+        "arousal seharusnya": "tinggi",
+        "F0 mean (Hz)": 346.4,
+        "RMS (dB)": -20.3,
+        "F0 (r/s/t)": "0.00/0.00/1.00",
+        "RMS (r/s/t)": "0.00/0.00/1.00",
+        "skor": 1.0,
+        "hasil fuzzy": "tinggi",
+        "benar": true
+      }
+    ],
+    "evaluation": {
+      "train_per_gender": {
+        "akurasi_biner": 0.784,
+        "akurasi_3kelas": 0.627
+      },
+      "train_gabung": {
+        "akurasi_biner": 0.757,
+        "akurasi_3kelas": 0.592
+      },
+      "validation_per_gender": {
+        "akurasi_biner": 0.774,
+        "akurasi_3kelas": 0.629
+      },
+      "validation_gabung": {
+        "akurasi_biner": 0.755,
+        "akurasi_3kelas": 0.621
+      }
+    },
+    "score_per_emotion_validation": {
+      "calm": 0.049,
+      "neutral": 0.067,
+      "sad": 0.466,
+      "disgust": 0.577,
+      "surprised": 0.632,
+      "happy": 0.705,
+      "angry": 0.732,
+      "fearful": 0.767
+    },
+    "keputusan": [
+      "Pada 4 contoh audio, aturan benar pada 4 contoh.",
+      "Di validation, aturan membedakan arousal tinggi dan rendah dengan akurasi 77% (3 kelas: 63%). Urutan skor per emosi masuk akal: calm 0.05, neutral 0.07, sad 0.47, disgust 0.58, surprised 0.63, happy 0.70, angry 0.73, fearful 0.77.",
+      "Tanpa informasi gender, akurasi biner menjadi 76%. Batas F0 per gender penting karena nada laki-laki dan perempuan berbeda sekitar 100 Hz.",
+      "Kelemahan: arousal hanya satu dimensi. Emosi dengan arousal serupa (misalnya angry vs happy, atau calm vs sad) tidak bisa dibedakan, dan skor sad (rata-rata 0.47) cenderung jatuh di tengah, kemungkinan karena sebagian ujaran sad tetap cukup keras atau bernada tinggi.",
+      "Keputusan: TIDAK dipakai sebagai fitur atau metode klasifikasi, karena F0 dan RMS sudah ada di 90 fitur dan dipelajari langsung oleh model. DIPAKAI (opsional) sebagai indikator arousal yang mudah dijelaskan untuk demo Anggota C, dengan catatan bahwa batas F0 per gender membutuhkan informasi gender; tanpa itu dipakai varian batas gabungan."
+    ]
+  },
+  "verifikasi": [
+    "[OK] KMP identik dengan pencarian naif (2.000 pasangan acak)",
+    "[OK] Bagian A hanya memakai aktor train (1 dan 2) — 60 file",
+    "[OK] Semua 60 rekaman punya token — panjang 15-36",
+    "[OK] Titik keanggotaan hanya dari data train",
+    "[OK] Data test (aktor 21-24) tidak dipakai",
+    "[OK] Fuzzy diuji pada >= 3 contoh audio (Rencana Kerja) — 4 contoh",
+    "[OK] Skor fuzzy selalu di rentang 0-1",
+    "[OK] Skor arousal emosi tinggi > emosi rendah (sanity check) — 0.71 vs 0.06"
+  ]
+}

@@ -1075,6 +1075,45 @@ File tanpa frame bersuara (nada tidak terdeteksi), dari 240 file test:
 - Kirim pesan langkah 9 ke Anggota C (lihat bagian Komunikasi).
 - Simpan notebook di `project07/notebooks/`.
 
+## Langkah 10 — Pembanding mutual information
+
+### Yang dikerjakan
+
+Notebook `Langkah10_AnggotaA_Mutual_Information.ipynb` dijalankan pada 24 November 2026 (config\_hash `eccc001f3d`, fitur `0c3114fc78`). Pembanding *filter method* untuk SA: 52 fitur dengan mutual information tertinggi terhadap label emosi, dihitung hanya di data train.
+
+1. Versi tabel fitur `peak`, yang terpilih di baseline Anggota B (SVM val macro F1 0,5165 vs 0,4846).
+2. k = 52, sama dengan subset SA utama Anggota B (P0, seed 42; median 3 seed = 52).
+3. Data: train split utama, aktor 1–16 (960 baris).
+4. Estimator `mutual_info_classif`, `n_neighbors=3`, rata-rata 10 seed (scikit-learn 1.6.1).
+
+Output: `data/analysis/mi_scores_peak.csv` (skor, peringkat, kolom `in_top_k`), `data/analysis/mi_eval_preview_peak.csv`, `figures/mutual_info/` (2 grafik dan `mi_summary.txt`), parameter di `config.json` bagian `mutual_info`, dan `docs/README_langkah10_mutual_information.md`.
+
+### Hasil
+
+- Top-52 identik untuk semua seed estimator (Jaccard minimum 1,000).
+- Per kelompok: mfcc 17/26, delta\_mfcc 10/26, prosodi 6/6, energi 0/3, zcr 0/2, spektral 6/8, contrast 6/7, chroma 7/12.
+- Ketiga fitur energi berperingkat rendah (rms\_mean #79, rms\_std #68, rms\_max #72), jadi hipotesis di langkah 11 bahwa MI akan memilih ketiganya sekaligus **tidak terbukti** untuk energi.
+- Redundansi: top-52 mencakup 39 kelompok redundan, dengan 13 fitur kembaran.
+
+Pratinjau di validation (protokol Anggota B; bukan angka resmi paper):
+
+| Subset | k | Val macro F1 (SVM tetap) | CV macro F1 train (tuning) | Val macro F1 (tuning) | Parameter terbaik |
+| --- | --- | --- | --- | --- | --- |
+| Semua 90 fitur | 90 | 0,5144 | 0,4901 | 0,5165 | C=1, gamma=0,005, RBF |
+| MI top-52 | 52 | 0,4658 | 0,4818 | 0,4205 | C=0,01, linear |
+
+Sebagai pembanding, SA-52 Anggota B di validation: 0,4995.
+
+### Verifikasi
+
+7/7 pemeriksaan OK: MI hanya di train (960 × 90); data test tidak dipakai; skor lengkap tanpa NaN dan tidak negatif; 52 indeks unik di rentang 0–89; top-52 stabil terhadap seed (Jaccard min 1,000); file untuk B tersimpan; format mengikuti kontrak `subsets.json`.
+
+### Tindak lanjut
+
+- File `data/analysis/mi_topk_peak.json` (daftar 52 indeks untuk Anggota B) disebut di README langkah 10 tetapi belum ada di repo. Sementara itu, daftar yang sama bisa diambil dari `mi_scores_peak.csv` (baris dengan `in_top_k = True`, kolom `index`).
+- Kolom `in_sa_subset` di `mi_scores_peak.csv` masih kosong; isi dari subset SA utama Anggota B.
+- Anggota B melatih SVM final MI-52 di train + validation; Anggota C mengevaluasinya sekali di test.
+
 ## Langkah 11 — Analisis korelasi fitur
 
 ### Yang dikerjakan
@@ -1141,6 +1180,47 @@ Kelompok redundan berisi ≥ 2 fitur (wakil dicetak tebal):
 
 - Kirim pesan langkah 11 ke Anggota C (lihat bagian Komunikasi).
 - Simpan notebook di `project07/notebooks/`.
+
+## Langkah 12 — Mini-eksperimen MLP: fitur lengkap vs terpilih
+
+### Yang dikerjakan
+
+Notebook `Langkah12_AnggotaA_MLP.ipynb` dijalankan pada 24 November 2026 (config\_hash `d03ab6d497`). Mini-eksperimen deep learning Minggu 12: MLP 2 hidden layer pada 90 fitur, SA-52, dan MI-52, dengan split dan metrik yang sama.
+
+1. Data `features_peak.csv`. Tuning di train (aktor 1–16) dengan `GridSearchCV` + `GroupKFold(4)` per aktor; grid layer {(64, 32), (128, 64), (256, 128)} × alpha {0,001; 0,01; 0,1; 1; 3}.
+2. MLP: ReLU, Adam (learning rate 0,001), early stopping (15% data latih, 20 epoch tanpa perbaikan), maksimum 1.000 epoch.
+3. Penilaian: macro F1 validation (aktor 17–20), rata-rata ± simpangan baku 5 seed. Pembanding SVM RBF (C = 1, gamma = scale, class\_weight = balanced).
+4. Model final dilatih ulang di train + validation (aktor 1–20) dengan seed 0. Data test tidak dipakai.
+
+Output: `results/mlp_results.json`, `results/mlp_summary.csv`, `results/mlp_summary.txt`, `models/mlp_full90.joblib`, `mlp_sa52.joblib`, `mlp_mi52.joblib`, `figures/mlp/`, dan `docs/README_langkah12_mlp.md`.
+
+### Hasil (validation)
+
+| Subset | k | Layer, alpha | CV macro F1 train | Val macro F1 MLP (5 seed) | Val UAR MLP | Val macro F1 SVM |
+| --- | --- | --- | --- | --- | --- | --- |
+| Semua 90 fitur | 90 | (256, 128), 1,0 | 0,4682 | 0,4769 ± 0,0261 | 0,4719 | 0,5144 |
+| SA (52 fitur) | 52 | (256, 128), 0,01 | 0,4639 | 0,4771 ± 0,0244 | 0,4766 | 0,4995 |
+| MI top-52 | 52 | (128, 64), 0,01 | 0,4634 | 0,4523 ± 0,0284 | 0,4500 | 0,4658 |
+
+MLP tidak lebih baik daripada SVM di ketiga subset. Pada MLP, SA-52 setara dengan 90 fitur, sedangkan MI-52 sekitar 0,025 lebih rendah.
+
+### Verifikasi
+
+7/7 pemeriksaan OK: tuning hanya di train; lipatan GroupKFold memisahkan aktor; data test tidak dipakai; model final di aktor 1–20 (1.200 baris); setiap subset 5 seed; 3 model bisa dimuat dan memprediksi label 0–7; SVM pembanding mereproduksi angka langkah 10 dan Anggota B (0,5144 dan 0,4995).
+
+### Keterbatasan
+
+- `MLPClassifier` tidak mendukung bobot kelas, sehingga kelas neutral tidak diberi bobot tambahan seperti pada SVM.
+- Early stopping menyisihkan 15% data latih secara acak (bukan per aktor), sehingga penghentiannya sedikit optimis.
+- Bundle model MLP belum mencatat `train_val_actors` dan `n_features`, berbeda dari bundle Anggota B.
+
+## Mini-eksperimen Minggu 6 (KMP) dan Minggu 9–10 (fuzzy)
+
+Dijalankan pada 24 November 2026 dengan notebook `MiniEksperimen_AnggotaA_KMP_Fuzzy.ipynb`. Hanya data train dan validation yang dipakai. Rincian ada di `docs/README_mini_eksperimen_A.md`, `results/mini_eksperimen_A.json`, dan `figures/mini/`.
+
+- **KMP pada kontur F0** (aktor 1 dan 2, kalimat 1, 60 file): pola 4 token (200 ms) hanya ditemukan persis pada 40% pengulangan dengan emosi yang sama dan 28% dengan emosi berbeda; pola 12 token 0%. Ucapan tidak pernah persis sama, jadi pencocokan persis tidak berguna untuk emosi. **Tidak dipakai** di metode final.
+- **Fuzzy rule arousal** (F0 mean dan RMS dB, 9 aturan): akurasi biner arousal di validation 0,774 dengan batas F0 per gender (0,755 tanpa gender). Tidak bisa membedakan emosi dengan arousal serupa. **Tidak dipakai** sebagai fitur; opsional sebagai indikator arousal di demo Anggota C.
+- Verifikasi 8/8 OK.
 
 ## Komunikasi dengan anggota lain
 
@@ -1470,6 +1550,10 @@ Terima kasih!
 | 22 November 2026 | Langkah 9: 12 tabel test bernoise (white dan ESC-50, SNR 20/10/0 dB); 9/9 verifikasi OK; README langkah 9 dibuat; pesan ke Anggota C disiapkan |
 | 22 November 2026 | Langkah 11: korelasi Pearson di train, 39 pasangan \|r\| > 0,8, 17 kelompok redundan, src/redundancy.py; 7/8 OK dan 1 CEK dijelaskan; pesan ke Anggota C disiapkan |
 | 22 November 2026 | Dataset Card diperbarui dengan hasil langkah 4–11 (fitur, split final, partisi, test bernoise dan ESC-50, keterbatasan, riwayat versi); dokumen Bahan Paper Anggota A dibuat (Related Work fitur akustik, Method III-A sampai III-D, 8 referensi IEEE dan BibTeX, bahan slide, jejak angka); checklist disusun ulang |
+| 24 November 2026 | Versi normalisasi `peak` dicatat dari baseline Anggota B; Dataset Card diperbarui |
+| 24 November 2026 | Langkah 10: MI top-52 di train; 7/7 OK; pratinjau val MI-52 0,4658 vs SA-52 0,4995 |
+| 24 November 2026 | Langkah 12: MLP pada 90 fitur, SA-52, MI-52; 7/7 OK; val 0,477 / 0,477 / 0,452 |
+| 24 November 2026 | Mini-eksperimen KMP dan fuzzy; 8/8 OK. Semua hasil diunggah lewat PR #1 (branch `ito`) |
 
 ### Checklist pekerjaan Anggota A (per 22 November 2026)
 
@@ -1489,7 +1573,10 @@ Item tercentang sudah selesai dan terverifikasi di log ini. Item yang belum terc
 - [x] Langkah 7–8: `splits.json`, `partitions.json`, dan `src/data_splits.py` dibuat; 10/10 verifikasi OK
 - [x] Langkah 7: 5 file tanpa frame bersuara diperiksa dan diputuskan tetap dipakai
 - [x] Langkah 9: 12 tabel test bernoise dan `src/noise.py` dibuat; 9/9 verifikasi OK
-- [ ] Langkah 10: pembanding mutual information (menunggu ukuran subset SA dari Anggota B)
+- [x] Langkah 10: pembanding mutual information top-52 di train; 7/7 verifikasi OK (24 November 2026)
+- [ ] Langkah 10: `data/analysis/mi_topk_peak.json` diunggah ke repo dan kolom `in_sa_subset` diisi
+- [x] Langkah 12: mini-eksperimen MLP 90 / SA-52 / MI-52; 7/7 verifikasi OK (24 November 2026)
+- [x] Mini-eksperimen KMP (Minggu 6) dan fuzzy (Minggu 9–10); 8/8 verifikasi OK (24 November 2026)
 - [x] Langkah 11: matriks korelasi, pasangan |r| > 0,8, kelompok redundan, dan `src/redundancy.py` dibuat; CEK verifikasi dijelaskan
 - [x] Bahan paper bagian A (Related Work fitur akustik, Method III-A sampai III-D, daftar pustaka, bahan slide) didraf
 - [ ] Isian ⟨B⟩ di bahan paper dan Dataset Card dilengkapi setelah baseline Anggota B keluar
