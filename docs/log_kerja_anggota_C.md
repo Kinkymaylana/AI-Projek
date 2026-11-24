@@ -163,7 +163,50 @@ Setelah B mengunggah SVM MI-52 (`f8f367d`), ke-12 model mereproduksi angka valid
 - Rujukan MLP adalah skor seed 0, karena model final A dilatih dengan seed 0. Angka 5 seed (0,4769 / 0,4771 / 0,4523) tetap yang dilaporkan di paper untuk validation.
 - B men-tuning ulang SVM MI-52 di train (linear, C = 0,05; val 0,4257), lebih rendah dari pratinjau A dengan SVM tetap (0,4658). Pemilihan hyperparameter mengikuti CV train, jadi angka 0,4257 yang dipakai; perbedaannya dicatat di paper.
 - Jawaban B (`docs/jawaban_anggota_B_ke_C.md`): seed tidak ditambah (dicatat di Limitations), λ final 0,015, model tetap di `models/` root, RF-52 sengaja tidak di-tuning ulang, SD memakai `ddof=1`.
-- Label sumbu `plot_confusion` masih berbahasa Indonesia; sesuaikan ke bahasa Inggris sebelum gambar dipakai di paper.
+- `plot_confusion` kini punya opsi `lang='en'`. Gambar paper dibuat ulang dari matriks tersimpan oleh `src/plot_test_figures.py` (`figures/test_eval/cm_*_en.png`) tanpa membuka test lagi.
+
+### Hasil evaluasi test (dijalankan sekali, 24 November 2026 20.11 WIB)
+
+Grup sudah mengonfirmasi daftar 12 metode sebelum run. Dryrun di awal run 12/12 OK. Data: 240 file, aktor 21–24. Kunci `results/test_eval/TEST_DONE.json` aktif, jadi run kedua ditolak.
+
+| Metode | k | Accuracy | Macro F1 [CI 95%] | UAR |
+| --- | --- | --- | --- | --- |
+| SVM_all90 | 90 | 0,488 | 0,469 [0,412; 0,524] | 0,504 |
+| SVM_SA52 | 52 | 0,483 | 0,469 [0,407; 0,523] | 0,496 |
+| SVM_MI52 | 52 | 0,433 | 0,422 [0,360; 0,480] | 0,449 |
+| SVM_HC48 | 48 | 0,488 | 0,473 [0,415; 0,528] | 0,500 |
+| SVM_Random52_median | 52 | 0,454 | 0,435 [0,380; 0,485] | 0,473 |
+| RF_all90 | 90 | 0,529 | 0,513 [0,448; 0,569] | 0,535 |
+| RF_SA52 | 52 | 0,525 | 0,503 [0,440; 0,563] | 0,520 |
+| Ensemble_SVM_RF_all90 | 90 | 0,513 | 0,497 [0,436; 0,553] | 0,516 |
+| Ensemble_SVM_RF_SA52 | 52 | 0,492 | 0,480 [0,417; 0,534] | 0,496 |
+| MLP_full90 | 90 | 0,488 | 0,483 [0,415; 0,544] | 0,500 |
+| MLP_SA52 | 52 | 0,567 | 0,554 [0,487; 0,609] | 0,570 |
+| MLP_MI52 | 52 | 0,508 | 0,502 [0,435; 0,559] | 0,520 |
+
+Uji berpasangan (selisih macro F1 A − B, paired bootstrap 1.000 ulangan; McNemar pada accuracy):
+
+| A − B | Selisih [CI 95%] | McNemar p |
+| --- | --- | --- |
+| SVM_SA52 − SVM_all90 | +0,001 [−0,045; +0,052] | 1,000 |
+| SVM_SA52 − SVM_MI52 | +0,047 [−0,013; +0,112] | 0,155 |
+| SVM_SA52 − SVM_HC48 | −0,004 [−0,053; +0,044] | 1,000 |
+| SVM_SA52 − SVM_Random52_median | +0,035 [−0,015; +0,083] | 0,337 |
+| RF_SA52 − RF_all90 | −0,010 [−0,058; +0,036] | 1,000 |
+| Ensemble SA52 − Ensemble all90 | −0,017 [−0,066; +0,028] | 0,500 |
+| MLP_SA52 − MLP_full90 | +0,071 [+0,014; +0,130] | 0,018 |
+
+### Interpretasi (untuk paper; jangan melebihi bukti)
+
+1. **Pertanyaan riset utama:** SVM dengan subset SA (52 fitur, 58% dari 90) memberi macro F1 test yang praktis sama dengan 90 fitur (0,469 vs 0,469). Selisihnya +0,001, tetapi CI-nya lebar (±0,05). Kalimat yang tepat: "tidak dapat dibedakan dari model 90 fitur pada data test ini", bukan "setara" secara pasti dan bukan "lebih baik". Pola yang sama terjadi pada RF dan ensemble.
+2. **SA vs pembanding:** SA-52 di atas MI-52 (+0,047) dan random-52 (+0,035), dan setara dengan hill climbing (−0,004). Namun ketiga CI mencakup 0, jadi keunggulan atas MI dan random hanya kecenderungan, bukan bukti.
+3. **MLP_SA52 tertinggi (0,554) dan satu-satunya selisih yang CI-nya tidak mencakup 0.** Hasil ini **tidak boleh dijadikan klaim utama**:
+   - model final MLP hanya satu seed (seed 0), dan di validation seed 0 justru SA52 < full90 (0,447 vs 0,493), sedangkan rata-rata 5 seed sama (0,477 vs 0,477);
+   - ada 7 perbandingan; dengan koreksi Bonferroni (α = 0,05/7 ≈ 0,007), p = 0,018 tidak signifikan;
+   - kemungkinan besar ini variasi antar-seed.
+4. **Urutan model berubah dari validation ke test.** Di validation SVM terbaik (0,517), di test RF (0,513). SVM turun sekitar 0,05 dari validation, RF naik sekitar 0,05. Karena model dipilih di validation, angka test dilaporkan apa adanya; tidak ada model yang dipilih ulang berdasarkan test.
+5. **Kelas sad paling sulit.** F1 sad = 0,000 pada SVM_all90 dan 0,093 pada SVM_SA52 (2 dari 32 file benar). Sad tertukar terutama dengan disgust, neutral, calm, dan happy. Ini prioritas error analysis.
+6. **Keterbatasan statistik:** CI bootstrap per file cenderung terlalu sempit karena file dari aktor yang sama tidak independen, dan test hanya 4 aktor.
 
 ---
 
@@ -340,6 +383,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | `src/run_test_evaluation.py` v1.0: dryrun validation 11/11 model cocok dengan angka A/B; 24 tes lolos; mode test menunggu SVM MI-52 |
 | 24 November 2026 | B push SVM MI-52, jawaban 7 poin, grafik Inggris, bahan paper B (`f8f367d`). Audit: 12 model final, 11 OK, 1 WARN, 0 FAIL. Dryrun 12/12 cocok; mode test SIAP |
 | 24 November 2026 | PR #2 A (branch `ito`): `mi_topk_peak.json`, kolom `in_sa_subset` (top-52 sama dengan yang dipakai B), bahan paper A. Nama log A kembali diganti di branch; C memulihkan nama (`dbf43eb`), lalu PR di-merge (`1c5a521`). Audit 11 OK, 1 WARN, 0 FAIL; dryrun 12/12; 24 tes lolos |
+| 24 November 2026 | Grup mengonfirmasi 12 metode final. **Evaluasi test sekali** dijalankan Anggota C (20.11 WIB): SVM_SA52 0,469 vs SVM_all90 0,469 (selisih +0,001, CI [−0,045; +0,052]). Gambar confusion matrix bahasa Inggris dibuat dari hasil tersimpan |
 
 ---
 
@@ -358,7 +402,7 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 6: audit ulang setelah skrip dan model final B masuk
 - [x] Langkah 6: audit ulang setelah pembanding B dan MI/MLP dari A masuk (11 OK, 1 WARN, 0 FAIL)
 - [x] Langkah 7: skrip `run_test_evaluation.py` siap; dryrun validation 11/11 model cocok; 7 tes
-- [ ] Langkah 7: evaluasi test sekali, CI bootstrap, McNemar, `main_table.csv` (skrip SIAP; 12/12 model cocok)
+- [x] Langkah 7: evaluasi test sekali (24 November 2026 20.11), CI bootstrap, McNemar, `main_table.csv` 12 baris
 - [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
 - [ ] Langkah 9: matriks transfer 5 × 5 (setelah test)
@@ -387,6 +431,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Semua masukan A dan B untuk evaluasi test sudah lengkap (12 model, audit 0 FAIL, dryrun 12/12). Konfirmasi ke grup bahwa daftar 12 metode di `docs/jawaban_anggota_B_ke_C.md` final.
-4. Setelah grup setuju: jalankan evaluasi test sekali (`run_test_evaluation.py --mode test`), lalu uji noise, error analysis, dan matriks transfer.
+3. Evaluasi test bersih sudah selesai. Berikutnya: uji noise (12 tabel test bernoise, model yang sama), error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), matriks transfer 5 × 5, dan confusion matrix full vs selected untuk paper.
+4. Bagikan tabel hasil test ke grup; jangan ada model atau λ yang diubah setelah ini.
 5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.

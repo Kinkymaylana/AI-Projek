@@ -1,7 +1,7 @@
 {
   "runner_version": "1.0",
   "evaluate_version": "1.1",
-  "run_at": "2026-11-24T19:58:32",
+  "run_at": "2026-11-24T20:10:42",
   "data": "train (aktor 1-16) untuk fit, validation (aktor 17-20) untuk nilai; test tidak dibaca",
   "counts": {
     "OK": 12,
@@ -19,7 +19,7 @@
       "val_uar": 0.5352,
       "diff": -0.0,
       "status": "OK",
-      "note": "rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 0.4 s"
+      "note": "rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 0.5 s"
     },
     {
       "method": "SVM_SA52",
@@ -31,7 +31,7 @@
       "val_uar": 0.5078,
       "diff": 0.0,
       "status": "OK",
-      "note": "rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 0.4 s"
+      "note": "rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 0.5 s"
     },
     {
       "method": "SVM_MI52",
@@ -55,7 +55,7 @@
       "val_uar": 0.5195,
       "diff": 0.0,
       "status": "OK",
-      "note": "rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 0.3 s"
+      "note": "rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 0.4 s"
     },
     {
       "method": "SVM_Random52_median",
@@ -79,7 +79,7 @@
       "val_uar": 0.4688,
       "diff": -0.0,
       "status": "OK",
-      "note": "rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 1.8 s"
+      "note": "rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 1.7 s"
     },
     {
       "method": "RF_SA52",
@@ -91,7 +91,7 @@
       "val_uar": 0.4648,
       "diff": -0.0,
       "status": "OK",
-      "note": "rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 1.2 s"
+      "note": "rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 1.3 s"
     },
     {
       "method": "Ensemble_SVM_RF_all90",
@@ -115,7 +115,7 @@
       "val_uar": 0.5078,
       "diff": -0.0,
       "status": "OK",
-      "note": "rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 1.7 s"
+      "note": "rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 1.6 s"
     },
     {
       "method": "MLP_full90",
@@ -127,7 +127,7 @@
       "val_uar": 0.4961,
       "diff": 0.0,
       "status": "OK",
-      "note": "rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 2.1 s"
+      "note": "rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 4.5 s"
     },
     {
       "method": "MLP_SA52",
@@ -139,7 +139,7 @@
       "val_uar": 0.4414,
       "diff": 0.0,
       "status": "OK",
-      "note": "rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 2.1 s"
+      "note": "rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 1.9 s"
     },
     {
       "method": "MLP_MI52",

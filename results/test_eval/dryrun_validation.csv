@@ -1,13 +1,13 @@
 method,owner,path,k,val_ref,val_macro_f1,val_uar,diff,status,note
-SVM_all90,B,models/svm_all90_final.joblib,90,0.5165,0.5165,0.5352,-0.0,OK,rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 0.4 s
-SVM_SA52,B,models/svm_sa52_final.joblib,52,0.4995,0.4995,0.5078,0.0,OK,rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 0.4 s
+SVM_all90,B,models/svm_all90_final.joblib,90,0.5165,0.5165,0.5352,-0.0,OK,rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 0.5 s
+SVM_SA52,B,models/svm_sa52_final.joblib,52,0.4995,0.4995,0.5078,0.0,OK,rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 0.5 s
 SVM_MI52,B,models/svm_mi52_final.joblib,52,0.4257,0.4257,0.4375,-0.0,OK,rujukan: final_models_manifest.json mi52_validation_summary; toleransi 0.001; fit+prediksi 0.2 s
-SVM_HC48,B,models/hill_climbing/svm_hc_final.joblib,48,0.5025,0.5025,0.5195,0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 0.3 s
+SVM_HC48,B,models/hill_climbing/svm_hc_final.joblib,48,0.5025,0.5025,0.5195,0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 0.4 s
 SVM_Random52_median,B,models/random_subset/svm_random52_median_final.joblib,52,0.4404,0.4404,0.4453,0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 0.4 s
-RF_all90,B,models/rf_all90_final.joblib,90,0.4644,0.4644,0.4688,-0.0,OK,rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 1.8 s
-RF_SA52,B,models/rf_sa52_final.joblib,52,0.4522,0.4522,0.4648,-0.0,OK,rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 1.2 s
+RF_all90,B,models/rf_all90_final.joblib,90,0.4644,0.4644,0.4688,-0.0,OK,rujukan: baseline_results.json; toleransi 0.001; fit+prediksi 1.7 s
+RF_SA52,B,models/rf_sa52_final.joblib,52,0.4522,0.4522,0.4648,-0.0,OK,rujukan: sa_main_results.json; toleransi 0.001; fit+prediksi 1.3 s
 Ensemble_SVM_RF_all90,B,models/ensemble/ensemble_svm_rf_all90_final.joblib,90,0.5239,0.5239,0.5195,-0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 2.1 s
-Ensemble_SVM_RF_SA52,B,models/ensemble/ensemble_svm_rf_sa52_final.joblib,52,0.5055,0.5055,0.5078,-0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 1.7 s
-MLP_full90,A,models/mlp_full90.joblib,90,0.4933,0.4933,0.4961,0.0,OK,rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 2.1 s
-MLP_SA52,A,models/mlp_sa52.joblib,52,0.4473,0.4473,0.4414,0.0,OK,rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 2.1 s
+Ensemble_SVM_RF_SA52,B,models/ensemble/ensemble_svm_rf_sa52_final.joblib,52,0.5055,0.5055,0.5078,-0.0,OK,rujukan: comparators_results.json; toleransi 0.001; fit+prediksi 1.6 s
+MLP_full90,A,models/mlp_full90.joblib,90,0.4933,0.4933,0.4961,0.0,OK,rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 4.5 s
+MLP_SA52,A,models/mlp_sa52.joblib,52,0.4473,0.4473,0.4414,0.0,OK,rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 1.9 s
 MLP_MI52,A,models/mlp_mi52.joblib,52,0.4127,0.4127,0.4102,0.0,OK,rujukan: mlp_results.json (seed 0); toleransi 0.001; fit+prediksi 0.6 s

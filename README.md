@@ -81,7 +81,8 @@ AI-Projek/
 │   ├── stability.py          indeks Nogueira dan pembanding acak (C)
 │   ├── run_stability_analysis.py   analisis stabilitas 15 run SA (C)
 │   ├── audit_leakage.py      audit anti-leakage (C)
-│   └── run_test_evaluation.py   uji coba di validation, lalu evaluasi test sekali (C)
+│   ├── run_test_evaluation.py   uji coba di validation, lalu evaluasi test sekali (C)
+│   └── plot_test_figures.py  gambar paper dari hasil test tersimpan (C)
 ├── progres_anggota_b/        baseline, SA, model, inference (B; akan dipindah ke struktur utama)
 ├── tests/                    tes unit (C)
 ├── results/                  main_table.csv, ringkasan stabilitas, hasil audit
@@ -114,7 +115,8 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Model final SVM MI-52 (B) | Selesai |
 | `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai; audit 11 OK, 1 WARN, 0 FAIL |
 | Skrip evaluasi test (C) | Siap; uji coba validation 12/12 model cocok dengan angka A/B |
-| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Belum dijalankan; menunggu keputusan tim |
+| Evaluasi test sekali (C) | Selesai 24 November 2026; `results/main_table.csv`, `results/test_eval/` |
+| Uji noise, error analysis, matriks transfer (C) | Berikutnya |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama

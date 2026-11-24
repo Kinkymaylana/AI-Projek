@@ -1,0 +1,17 @@
+{
+  "evaluated_at": "2026-11-24T20:11:28",
+  "methods": [
+    "SVM_all90",
+    "SVM_SA52",
+    "SVM_MI52",
+    "SVM_HC48",
+    "SVM_Random52_median",
+    "RF_all90",
+    "RF_SA52",
+    "Ensemble_SVM_RF_all90",
+    "Ensemble_SVM_RF_SA52",
+    "MLP_full90",
+    "MLP_SA52",
+    "MLP_MI52"
+  ]
+}

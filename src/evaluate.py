@@ -220,7 +220,7 @@ def mcnemar_test(y_true, pred_a, pred_b, labels=None):
 # ----------------------------------------------------------------------------
 # Gambar
 # ----------------------------------------------------------------------------
-def plot_confusion(cm, labels=None, title=None, normalize=True, ax=None, save_path=None):
+def plot_confusion(cm, labels=None, title=None, normalize=True, ax=None, save_path=None, lang='id'):
     """Gambar confusion matrix. Warna = proporsi per baris (recall); angka = jumlah file.
 
     Parameters
@@ -228,6 +228,7 @@ def plot_confusion(cm, labels=None, title=None, normalize=True, ax=None, save_pa
     cm : np.ndarray dari evaluate()['confusion_matrix'] (urutan sesuai labels)
     normalize : bool, warnai berdasarkan proporsi per baris (default True)
     save_path : str, opsional; jika diisi, gambar disimpan (dpi 200)
+    lang : 'id' (demo, dokumen) atau 'en' (gambar paper)
 
     Returns
     -------
@@ -251,8 +252,10 @@ def plot_confusion(cm, labels=None, title=None, normalize=True, ax=None, save_pa
     ax.set_yticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=45, ha='right')
     ax.set_yticklabels(labels)
-    ax.set_xlabel('Prediksi')
-    ax.set_ylabel('Label sebenarnya')
+    text = {'id': ('Prediksi', 'Label sebenarnya', 'Proporsi per baris', 'Jumlah'),
+            'en': ('Predicted', 'True label', 'Row proportion (recall)', 'Count')}[lang]
+    ax.set_xlabel(text[0])
+    ax.set_ylabel(text[1])
     if title:
         ax.set_title(title)
     thresh = 0.5 if normalize else shown.max() / 2.0
@@ -261,7 +264,7 @@ def plot_confusion(cm, labels=None, title=None, normalize=True, ax=None, save_pa
             ax.text(j, i, str(int(cm[i, j])), ha='center', va='center', fontsize=8,
                     color='white' if shown[i, j] > thresh else 'black')
     fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04,
-                 label='Proporsi per baris' if normalize else 'Jumlah')
+                 label=text[2] if normalize else text[3])
     fig.tight_layout()
     if save_path:
         os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)

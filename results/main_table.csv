@@ -1,0 +1,13 @@
+method,split,n_features,accuracy,macro_f1,ci_low,ci_high,runtime_s,run_id,seed,evaluated_at,note
+SVM_all90,test,90,0.487500,0.468706,0.412398,0.523894,0.030300,svm_all90_final.joblib,42,2026-11-24T20:10:44,model final train+validation; predict(); evaluasi test sekali oleh C
+SVM_SA52,test,52,0.483333,0.469373,0.406713,0.522757,0.027700,svm_sa52_final.joblib,42,2026-11-24T20:10:47,model final train+validation; predict(); evaluasi test sekali oleh C
+SVM_MI52,test,52,0.433333,0.422378,0.360078,0.479521,0.008600,svm_mi52_final.joblib,42,2026-11-24T20:10:49,model final train+validation; predict(); evaluasi test sekali oleh C
+SVM_HC48,test,48,0.487500,0.473385,0.414826,0.527641,0.024600,svm_hc_final.joblib,42,2026-11-24T20:10:51,model final train+validation; predict(); evaluasi test sekali oleh C
+SVM_Random52_median,test,52,0.454167,0.434869,0.379734,0.484583,0.038400,svm_random52_median_final.joblib,42,2026-11-24T20:10:53,model final train+validation; predict(); evaluasi test sekali oleh C
+RF_all90,test,90,0.529167,0.513162,0.448210,0.569367,0.087300,rf_all90_final.joblib,42,2026-11-24T20:10:55,model final train+validation; predict(); evaluasi test sekali oleh C
+RF_SA52,test,52,0.525000,0.503123,0.439655,0.562957,0.086500,rf_sa52_final.joblib,42,2026-11-24T20:10:57,model final train+validation; predict(); evaluasi test sekali oleh C
+Ensemble_SVM_RF_all90,test,90,0.512500,0.497371,0.435623,0.552966,0.120500,ensemble_svm_rf_all90_final.joblib,42,2026-11-24T20:10:59,model final train+validation; predict(); evaluasi test sekali oleh C
+Ensemble_SVM_RF_SA52,test,52,0.491667,0.480499,0.416517,0.534036,0.124400,ensemble_svm_rf_sa52_final.joblib,42,2026-11-24T20:11:01,model final train+validation; predict(); evaluasi test sekali oleh C
+MLP_full90,test,90,0.487500,0.483247,0.414591,0.544108,0.002800,mlp_full90.joblib,42,2026-11-24T20:11:03,model final train+validation; predict(); evaluasi test sekali oleh C
+MLP_SA52,test,52,0.566667,0.553736,0.486604,0.608590,0.002300,mlp_sa52.joblib,42,2026-11-24T20:11:05,model final train+validation; predict(); evaluasi test sekali oleh C
+MLP_MI52,test,52,0.508333,0.501688,0.434717,0.558956,0.001900,mlp_mi52.joblib,42,2026-11-24T20:11:06,model final train+validation; predict(); evaluasi test sekali oleh C
