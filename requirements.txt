@@ -1,5 +1,22 @@
+# Proyek 07 - Finding the Best Acoustic Features
+# Diuji dengan Python 3.13.18 (lingkungan bersih, 24 Nov 2026).
+# Versi dikunci agar hasil dapat direproduksi; jangan diubah tanpa memberi tahu grup.
+
+# Data & fitur (Anggota A)
 numpy==2.4.6
 pandas==2.2.3
 librosa==0.11.0
 soundfile==0.14.0
+
+# Model, SA, evaluasi (Anggota B, C)
+# scikit-learn 1.6.1 = versi yang dipakai saat best_model_p0.joblib disimpan.
+# Versi lain memunculkan InconsistentVersionWarning saat model dimuat.
+scikit-learn==1.6.1
+scipy==1.18.1
+joblib==1.6.0
+
+# Gambar
 matplotlib==3.10.0
+
+# Demo (Anggota C)
+gradio==6.32.0
