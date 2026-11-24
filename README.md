@@ -22,7 +22,7 @@ Mini-research mata kuliah Kecerdasan Artifisial. Pertanyaan riset:
 | Anggota | Jalur | Dokumentasi |
 | --- | --- | --- |
 | A | Data & Fitur: dataset, EDA, preprocessing, 90 fitur, split, partisi, test bernoise, korelasi | `docs/log_kerja_anggota_A.md`, `docs/dataset_card.md`, `data/README.md` |
-| B | Model & Optimasi: baseline, SA, uji stabilitas, model tersimpan, inference | `progres_anggota_b/docs/` |
+| B | Model & Optimasi: baseline, SA, uji stabilitas, model final, inference | `progres_anggota_b/docs/`, `docs/Panduan_Model_Final.md` |
 | C | Evaluasi, Demo & Integrasi: `evaluate.py`, analisis stabilitas, audit anti-leakage, evaluasi test, demo | `docs/audit_anti_leakage.md` |
 
 ## Instalasi
@@ -58,8 +58,9 @@ Semua perintah dijalankan dari root repo.
 | Analisis stabilitas | `.venv\Scripts\python.exe src\run_stability_analysis.py` | `results/stability_*`, `figures/stability/` |
 | Audit anti-leakage | `.venv\Scripts\python.exe src\audit_leakage.py` | `results/audit_leakage.json` |
 | Membuat ulang fitur dari audio | `.venv\Scripts\python.exe extract_features.py --config config.json` | lihat `docs/README_extract_features.md` |
+| Melatih ulang model final | `.venv\Scripts\python.exe train_final_models.py` | `models/*.joblib`, lihat `docs/Panduan_Model_Final.md` |
 
-Tab **Coba sendiri** menerima rekaman mikrofon atau file WAV. Skor yang tampil adalah skor relatif SVM, bukan probabilitas terkalibrasi.
+Tab **Coba sendiri** menerima rekaman mikrofon atau file WAV dan menampilkan probabilitas 8 emosi dari model final SVM 90 fitur dan SVM 52 fitur (subset SA) secara berdampingan.
 
 ## Struktur folder
 
@@ -68,6 +69,8 @@ AI-Projek/
 ├── app.py                    demo Gradio (C)
 ├── extract_features.py       membuat ulang tabel fitur dari audio (A)
 ├── config.json               parameter preprocessing dan fitur (A)
+├── train_final_models.py     melatih model final di train + validation (B)
+├── models/                   4 model final SVM/RF × 90/52 fitur dan manifest (B)
 ├── requirements.txt          versi pustaka terkunci
 ├── data/                     metadata, fitur, split, partisi, test bernoise, korelasi (A)
 ├── src/
@@ -101,10 +104,11 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Data, fitur, split, partisi, test bernoise, korelasi (A) | Selesai |
 | Pembanding mutual information (A, langkah 10) | Menunggu |
 | Baseline, SA utama, 15 run stabilitas (B) | Selesai |
-| Skrip `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (B) | Menunggu |
-| Pembanding hill climbing, random subset, sweep λ, ensemble; model final per metode (B) | Menunggu |
+| Skrip `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (B) | Selesai |
+| Model final SVM/RF × 90/52 fitur di train + validation (B) | Selesai |
+| Pembanding hill climbing, random subset, sweep λ, ensemble (B) | Menunggu |
 | `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai |
-| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Menunggu model final dan MI |
+| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Menunggu daftar metode final dan MI |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama

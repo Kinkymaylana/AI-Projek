@@ -2,13 +2,13 @@
 app.py - Demo final Proyek 07 (Finding the Best Acoustic Features).
 
 Penanggung jawab : Anggota C
-Versi            : 0.1 (24 November 2026)
+Versi            : 0.2 (24 November 2026)
 
 Empat tab:
-  Optimasi        ringkasan Simulated Annealing (SA) utama
+  Optimasi        kurva SA per iterasi (dari history) dan konfigurasinya
   Fitur terpilih  52 fitur model dan frekuensinya di 15 run stabilitas
   Perbandingan    90 fitur vs subset SA pada validation, serta status hasil test
-  Coba sendiri    prediksi emosi dari rekaman atau file audio
+  Coba sendiri    probabilitas emosi dari model final 90 fitur dan subset SA, berdampingan
 
 Semua angka dibaca dari file hasil, tidak diketik manual. Aplikasi ini TIDAK menghitung
 apa pun pada data test. Hasil test baru tampil jika sudah tercatat di results/main_table.csv.
@@ -22,6 +22,7 @@ import os
 import sys
 
 import gradio as gr
+import joblib
 import pandas as pd
 import soundfile as sf
 from audioread.exceptions import DecodeError
@@ -39,7 +40,14 @@ sys.path.insert(0, os.path.join(ROOT, 'src'))
 from evaluate import LABELS  # noqa: E402
 from inference import get_predictor  # noqa: E402
 
-predictor = get_predictor()  # model dimuat sekali saat aplikasi mulai
+# Model final Anggota B (dilatih pada train + validation, aktor 1-20). Dimuat sekali saat mulai.
+MODEL_FINAL = {'90 fitur': os.path.join(ROOT, 'models', 'svm_all90_final.joblib'),
+               'SA 52 fitur': os.path.join(ROOT, 'models', 'svm_sa52_final.joblib')}
+if all(os.path.exists(p) for p in MODEL_FINAL.values()):
+    PREDIKTOR = {nama: get_predictor(path) for nama, path in MODEL_FINAL.items()}
+    CV5 = {nama: joblib.load(path)['cv5_trainval_macro_f1_mean'] for nama, path in MODEL_FINAL.items()}
+else:  # cadangan: model P0 dari handoff awal B
+    PREDIKTOR, CV5 = {'SA 52 fitur (P0)': get_predictor()}, {}
 
 # Puncak di bawah ambang ini dianggap hening. Puncak terkecil di 1.440 file RAVDESS = 0,00455
 # (data/preprocess_log.csv), jadi ambang ini tidak menolak rekaman dataset.
@@ -194,34 +202,55 @@ def status_test():
 # ----------------------------------------------------------------------------
 # Coba sendiri
 # ----------------------------------------------------------------------------
-KOLOM_SKOR = ['Emosi', 'Skor relatif']
+KOLOM_SKOR = ['Emosi'] + list(PREDIKTOR)
 
 
-def format_skor(scores):
-    """Baris tabel [emosi, skor]; skor desimal agar tidak terbaca sebagai probabilitas (%)."""
-    return [[emosi, koma(nilai, 2)] for emosi, nilai in scores.items()]
+def nilai_skor(res, emosi):
+    """Probabilitas dalam persen; skor relatif (model lama) dalam desimal."""
+    v = res['scores'][emosi]
+    return f'{koma(v * 100, 1)}%' if res['score_type'] == 'probability' else koma(v, 2)
+
+
+def format_skor(hasil):
+    """Satu baris per emosi, diurutkan menurut model terakhir (subset SA)."""
+    acuan = hasil[list(hasil)[-1]]['scores']
+    return [[e] + [nilai_skor(r, e) for r in hasil.values()]
+            for e in sorted(acuan, key=acuan.get, reverse=True)]
 
 
 def prediksi(audio):
+    kosong = pd.DataFrame(columns=KOLOM_SKOR)
     if audio is None:
-        return [], 'Belum ada audio. Rekam atau unggah file dulu.'
+        return kosong, 'Belum ada audio. Rekam atau unggah file dulu.'
     try:
-        res = predictor.predict_gradio(audio)
+        hasil = {nama: p.predict_gradio(audio) for nama, p in PREDIKTOR.items()}
     except ValueError as e:
-        return [], f'Input tidak valid: {e}'
+        return kosong, f'Input tidak valid: {e}'
     except FileNotFoundError:
-        return [], 'File audio tidak ditemukan. Unggah ulang filenya.'
+        return kosong, 'File audio tidak ditemukan. Unggah ulang filenya.'
     except (DecodeError, sf.LibsndfileError, EOFError):
-        return [], 'File tidak dapat dibaca sebagai audio. Pastikan file tidak rusak, lalu unggah WAV.'
+        return kosong, 'File tidak dapat dibaca sebagai audio. Pastikan file tidak rusak, lalu unggah WAV.'
+    res = next(iter(hasil.values()))
     if res['preprocess_info']['peak_trim'] < AMBANG_HENING:
-        return [], 'Audio hening: tidak ada suara yang dapat dinilai. Rekam ulang dengan suara lebih jelas.'
-    info = (f"### Prediksi: {res['emotion']}\n"
-            f"Durasi setelah trim {koma(res['duration_after_trim_s'], 2)} detik, "
-            f"frame bersuara {res['voiced_ratio']:.0%}, {res['n_features_used']} fitur dipakai.")
+        return kosong, 'Audio hening: tidak ada suara yang dapat dinilai. Rekam ulang dengan suara lebih jelas.'
+
+    label = {nama: r['emotion'] for nama, r in hasil.items()}
+    baris = [f"**{nama}:** {label[nama]}" for nama in hasil]
+    info = '### Prediksi\n' + ' · '.join(baris)
+    if len(set(label.values())) > 1:
+        info += '\n\nKedua model memberi label berbeda untuk rekaman ini.'
+    for nama, r in hasil.items():
+        teratas = max(r['scores'], key=r['scores'].get)
+        if r['score_type'] == 'probability' and teratas != r['emotion']:
+            # SVC: label dari decision function, probabilitas dari Platt scaling; bisa tidak searah.
+            info += (f"\n\n*{nama}: label SVM ({r['emotion']}) berbeda dari probabilitas tertinggi "
+                     f"({teratas}). Ini wajar pada SVM; label yang dipakai untuk evaluasi adalah {r['emotion']}.*")
+    info += (f"\n\nDurasi setelah trim {koma(res['duration_after_trim_s'], 2)} detik, "
+             f"frame bersuara {res['voiced_ratio']:.0%}.")
     if res['voiced_ratio'] < 0.2:
         info += ('\n\n**Peringatan:** hampir tidak ada frame bersuara yang terdeteksi, '
                  'sehingga prediksi ini kurang dapat diandalkan.')
-    return format_skor(res['scores']), info
+    return pd.DataFrame(format_skor(hasil), columns=KOLOM_SKOR), info
 
 
 # ----------------------------------------------------------------------------
@@ -240,14 +269,43 @@ CATATAN_PERBANDINGAN = (
     f"{selisih(_d_svm)} dibanding semua fitur. Selisih ini belum diuji secara statistik, "
     f"jadi belum bisa disebut lebih baik, lebih buruk, atau setara."
 )
-CATATAN_COBA = f"""
+if CV5:
+    _akurasi = ('Macro F1 validasi silang per aktor (5 fold, aktor 1-20): '
+                + ', '.join(f'{nama} {koma(v, 2)}' for nama, v in CV5.items())
+                + ' (8 kelas, tebakan acak sekitar 0,125)')
+    CATATAN_COBA = f"""
 **Cara membaca hasil**
-- Skor adalah **skor relatif** dari SVM, **bukan probabilitas terkalibrasi**.
-- Macro F1 model pada aktor validation {koma(VAL['svm_sa_subset'], 2)} (8 kelas, tebakan acak sekitar 0,125),
-  jadi prediksi yang salah adalah hal biasa.
-- Model dilatih pada 16 aktor RAVDESS: bahasa Inggris, rekaman studio, emosi diperankan.
+- Kedua kolom adalah model SVM final: satu memakai 90 fitur, satu memakai {SA['k_selected']} fitur hasil SA.
+- Angka adalah probabilitas per emosi (Platt scaling); tiap kolom berjumlah 100%.
+- {_akurasi}, jadi prediksi yang salah adalah hal biasa.
+- Model dilatih pada 20 aktor RAVDESS: bahasa Inggris, rekaman studio, emosi diperankan.
   Rekaman mikrofon biasa, bahasa lain, atau suasana bising berada di luar kondisi tersebut.
 """
+else:
+    CATATAN_COBA = f"""
+**Cara membaca hasil**
+- Model final belum ada di `models/`; yang dipakai model P0 dari handoff awal Anggota B.
+- Skor adalah **skor relatif** dari SVM, **bukan probabilitas terkalibrasi**.
+- Macro F1 model pada aktor validation {koma(VAL['svm_sa_subset'], 2)} (8 kelas, tebakan acak sekitar 0,125).
+"""
+
+# ----------------------------------------------------------------------------
+# Kurva optimasi (dari history SA, satu baris per iterasi)
+# ----------------------------------------------------------------------------
+HISTORY = pd.DataFrame(SA['history'])
+METRIK = {
+    'Objective (CV Macro F1 - penalti)': ('cur_obj', 'best_obj'),
+    'CV Macro F1': ('cur_cv_f1', 'best_cv_f1'),
+    'Jumlah fitur': ('cur_k', 'best_k'),
+    'Suhu': ('temp', None),
+}
+
+
+def kurva(metrik):
+    cur, best = METRIK[metrik]
+    seri = [('Solusi saat ini', cur), ('Terbaik sejauh ini', best)] if best else [('Suhu', cur)]
+    return pd.concat([pd.DataFrame({'Iterasi': HISTORY['iter'], 'Nilai': HISTORY[kol], 'Seri': nama})
+                      for nama, kol in seri], ignore_index=True)
 
 
 # ----------------------------------------------------------------------------
@@ -272,7 +330,15 @@ with gr.Blocks(title='Proyek 07 - Finding the Best Acoustic Features') as demo:
 
     with gr.Tab('Optimasi'):
         gr.Markdown(RINGKASAN)
-        gambar('sa_main_convergence.png', 'Konvergensi SA')
+        p_metrik = gr.Radio(list(METRIK), value=list(METRIK)[0], label='Tampilkan')
+        p_kurva = gr.LinePlot(kurva(list(METRIK)[0]), x='Iterasi', y='Nilai', color='Seri',
+                              color_map={'Solusi saat ini': '#b5b3ad', 'Terbaik sejauh ini': '#2a78d6',
+                                         'Suhu': '#2a78d6'},
+                              title=f"Simulated Annealing, {len(HISTORY) - 1} iterasi", height=380,
+                              y_title='', tooltip=['Seri', 'Iterasi', 'Nilai'])
+        p_metrik.change(kurva, p_metrik, p_kurva)
+        gr.Markdown('Garis abu-abu adalah solusi yang sedang dikunjungi SA; ia boleh turun karena SA '
+                    'kadang menerima solusi lebih buruk. Garis biru adalah solusi terbaik yang disimpan.')
         tabel(tabel_optimasi(), 'Konfigurasi SA utama')
 
     with gr.Tab('Fitur terpilih'):
@@ -313,8 +379,8 @@ with gr.Blocks(title='Proyek 07 - Finding the Best Acoustic Features') as demo:
                 tombol = gr.Button('Prediksi', variant='primary')
             with gr.Column():
                 ringkasan = gr.Markdown()
-                skor = gr.Dataframe(headers=KOLOM_SKOR, datatype=['str', 'str'], interactive=False,
-                                    label='Skor relatif per emosi (bukan probabilitas)')
+                skor = gr.Dataframe(headers=KOLOM_SKOR, datatype=['str'] * len(KOLOM_SKOR), interactive=False,
+                                    label='Probabilitas per emosi' if CV5 else 'Skor relatif per emosi')
         gr.Markdown(CATATAN_COBA)
         tombol.click(prediksi, inputs=audio, outputs=[skor, ringkasan])
 

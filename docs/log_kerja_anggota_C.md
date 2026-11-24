@@ -2,9 +2,11 @@
 
 ## Ringkasan
 
-Pekerjaan per 24 November 2026: modul evaluasi bersama (`src/evaluate.py`) selesai dan teruji, interface inference Anggota B sudah diverifikasi dan dipakai di demo Gradio 4 tab (`app.py`), audit anti-leakage sudah dijalankan (0 FAIL, 1 WARN, 2 PENDING), dan analisis stabilitas yang tidak memerlukan label sudah selesai. Temuan utamanya: subset SA hanya sedikit lebih stabil daripada subset acak berukuran sama (indeks Nogueira 0,106).
+Pekerjaan per 24 November 2026: modul evaluasi bersama (`src/evaluate.py`) selesai dan teruji, interface inference Anggota B sudah diverifikasi dan dipakai di demo Gradio 4 tab (`app.py`), audit anti-leakage sudah dijalankan (0 FAIL, 1 WARN, 1 PENDING), dan analisis stabilitas yang tidak memerlukan label sudah selesai. Temuan utamanya: subset SA hanya sedikit lebih stabil daripada subset acak berukuran sama (indeks Nogueira 0,106).
 
-Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dijalankan. Semuanya menunggu model final per metode dari Anggota B dan pembanding mutual information dari Anggota A.
+Pada 24 November 2026 Anggota B menyerahkan tiga skrip eksperimen dan empat model final (commit `1a1b51b`). Audit diulang (0 FAIL), dan demo kini membandingkan model final 90 fitur dan 52 fitur secara berdampingan.
+
+Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dijalankan. Model final SVM/RF sudah ada, tetapi pembanding hill climbing, random subset, sweep λ, dan ensemble dari B serta mutual information dari A belum ada. Evaluasi test ditunda sampai grup memastikan pembanding mana yang akan dibuat, karena setiap metode hanya boleh dievaluasi sekali di test.
 
 | Langkah (Rencana Kerja) | Status | Hasil utama |
 | --- | --- | --- |
@@ -14,12 +16,12 @@ Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dija
 | 4. Mini-eksperimen graph search (Minggu 5) | Belum tercatat di repo | Perlu dikonfirmasi |
 | 5. Proposal 1 halaman (Minggu 7) | Belum tercatat di repo | Perlu dikonfirmasi |
 | 6. Audit anti-leakage | Selesai, diulang setelah file baru masuk | `src/audit_leakage.py`, `docs/audit_anti_leakage.md` |
-| 7. Evaluasi test sekali | Menunggu | Model final B per metode dan MI dari A |
+| 7. Evaluasi test sekali | Menunggu | Model final SVM/RF (90 dan 52 fitur) sudah ada; menunggu kepastian pembanding B dan MI dari A |
 | 8. Gambar hasil | Sebagian | Gambar stabilitas selesai; trade-off λ dan confusion matrix menunggu |
 | 9. Analisis stabilitas | Sebagian | Heatmap, Jaccard, Nogueira, kelompok redundan selesai; matriks transfer dikunci sampai test tercatat |
 | 10. Uji noise | Menunggu langkah 7 | Tabel test bernoise dari A sudah siap |
 | 11. Error analysis | Menunggu langkah 7 | 2 file test tanpa nada (aktor 21) sudah dicatat A |
-| 12. Demo Gradio | Alpha berjalan | 4 tab di `app.py`; perbandingan full vs selected di tab Coba sendiri menunggu model 90 fitur |
+| 12. Demo Gradio | Alpha berjalan | 4 tab di `app.py` v0.2: kurva SA interaktif dari history, probabilitas model final 90 vs 52 fitur berdampingan |
 | 13. Integrasi paper dan slide | Belum | — |
 
 **Jaminan anti-leakage:** data test (aktor 21–24) belum pernah dievaluasi oleh C. Semua pengujian demo memakai audio sintetis, dan pengecekan model memakai validation (aktor 17–20).
@@ -92,16 +94,17 @@ Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dija
 
 Audit dibuat sebagai skrip (`src/audit_leakage.py`) agar bisa diulang setiap ada file baru. Skrip tidak membuka fitur atau label test untuk evaluasi. Detail lengkap: `docs/audit_anti_leakage.md`; hasil mentah: `results/audit_leakage.json`.
 
-### Hasil (24 November 2026): 8 OK, 1 WARN, 2 PENDING, 0 FAIL
+### Hasil audit ulang (24 November 2026, setelah commit `1a1b51b` B): 10 OK, 1 WARN, 1 PENDING, 0 FAIL
 
 | Pemeriksaan | Status |
 | --- | --- |
 | Aktor tidak tumpang tindih di split utama dan 5 partisi | OK |
 | Tabel fitur 1.440 baris tanpa NaN; setiap split punya 2 gender dan 8 emosi | OK |
-| Scaler di dalam Pipeline; scaler model utama melihat 960 sampel = train P0 | OK |
+| Scaler di dalam Pipeline; scaler model P0 melihat 960 sampel = train P0 | OK |
+| (baru) Empat model final di `models/`: scaler melihat 1.200 sampel = aktor 1–20, aktor test tidak ada, subset 52 fitur sama dengan SA utama | OK |
 | Objective SA memakai scaler per fold GroupKFold di dalam train | OK |
-| Kode dan notebook B tidak membaca test | OK |
-| Tiga skrip eksperimen B tersedia untuk diaudit | PENDING |
+| Kode dan notebook B tidak membaca test (kini 10 file: seluruh `progres_anggota_b/` dan `train_final_models.py`) | OK |
+| Tiga skrip eksperimen B tersedia untuk diaudit | OK |
 | Run stabilitas P1–P4 tidak memakai aktor test utama | **WARN** |
 | Mutual information dihitung di train saja | PENDING |
 | Test belum dievaluasi | OK |
@@ -109,6 +112,11 @@ Audit dibuat sebagai skrip (`src/audit_leakage.py`) agar bisa diulang setiap ada
 ### Temuan WARN
 
 Run stabilitas P1–P4 sudah dijalankan B pada 22 November 2026 dengan aktor 21–24 di train (P1–P3) dan di validation (P4), padahal `partitions.json` meminta run ini setelah hasil utama final. Model utama tidak terpengaruh, tetapi angka validation P4 dan rata-rata "Validation Macro F1 0,4734 ± 0,0286" lintas 15 run ikut memuat skor pada aktor test. Angka itu tidak boleh dipakai untuk keputusan apa pun, dan urutan pengerjaan ini dicatat di Experimental Protocol paper.
+
+### Perbaikan skrip audit (v1.1)
+
+- Versi 1.0 hanya memindai `progres_anggota_b/src/` dan `notebooks/`, sehingga skrip baru B di `scripts/` dan `train_final_models.py` di root tidak ikut terperiksa. Pemindaian kini rekursif di `progres_anggota_b/` ditambah daftar `B_ROOT_FILES`.
+- Baris yang hanya membaca daftar nomor aktor test (`test_actors = sorted(... splits['test'])`, dipakai B untuk assert tidak tumpang tindih) sempat terbaca sebagai FAIL. Baris seperti itu kini dikecualikan, kecuali bila baris yang sama memfilter tabel data.
 
 ---
 
@@ -185,18 +193,18 @@ File uji sementara `app_uji_inference.py` dihapus setelah fungsinya dipindahkan 
 
 | Tab | Isi | Sesuai Rencana Kerja? |
 | --- | --- | --- |
-| Optimasi | Ringkasan SA, kurva konvergensi, konfigurasi | Sebagian: kurva masih gambar B, belum digambar dari log |
+| Optimasi | Ringkasan SA; kurva interaktif per iterasi dari `history` di `sa_main_results.json` (objective, CV macro F1, jumlah fitur, suhu; solusi saat ini vs terbaik); konfigurasi | Ya. Log per run `logs/sa_<run_id>.csv` belum ada, jadi kurva memakai `history` |
 | Fitur terpilih | Daftar 90 fitur dengan filter dan pencarian, heatmap fitur × run, sebaran per kelompok | Ya |
 | Perbandingan | 90 fitur vs subset SA di validation, F1 per emosi, stabilitas, status test | Sebagian: test dan MI menunggu |
-| Coba sendiri | Rekam atau unggah audio → prediksi subset SA | Sebagian: model 90 fitur belum ada untuk perbandingan berdampingan |
+| Coba sendiri | Rekam atau unggah audio → probabilitas 8 emosi dari model final SVM 90 fitur dan SVM 52 fitur, berdampingan | Ya |
+
+**Perubahan v0.2 (setelah model final B tiba).** Tab Coba sendiri memakai `models/svm_all90_final.joblib` dan `models/svm_sa52_final.joblib`. Jika folder `models/` tidak ada, demo kembali ke model P0. Karena model final memakai `probability=True`, skor kini ditampilkan sebagai persen. Label SVM (`predict`, dari decision function) bisa berbeda dari kelas dengan probabilitas tertinggi (Platt scaling): ini terjadi pada 9,0% (90 fitur) dan 5,2% (52 fitur) file train + validation. Demo memberi catatan bila itu terjadi, dan evaluasi test memakai `predict()`.
 
 Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak mengevaluasi data test. Hasil test tampil otomatis setelah tercatat di `main_table.csv`.
 
 ### Sisa langkah 12
 
 - Uji tab Coba sendiri dengan mikrofon dan file RAVDESS aktor 1–20.
-- Tambahkan model 90 fitur di tab Coba sendiri setelah B menyerahkannya.
-- Gambar kurva Optimasi langsung dari log SA.
 - Pastikan demo jalan di Colab (`share=True`) atau Hugging Face Spaces tanpa mengubah kode.
 
 ---
@@ -206,7 +214,9 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 1. **Rancangan SA Anggota B berbeda dari Rencana Kerja** dan perlu dijelaskan di Method: objective memakai macro F1 validasi silang 4-fold di train (bukan validation), λ = 0,015 (bukan 0,02), 500 iterasi dengan pendinginan geometrik dan reheating, serta 3 seed (bukan 5).
 2. **Subset SA belum terbukti lebih baik di validation.** Macro F1 SVM: 90 fitur 0,5165, subset SA 52 fitur 0,4995 (selisih −0,0170, belum diuji statistik). Pakai frasa "setara dengan X% fitur" hanya jika paired bootstrap atau McNemar di test mendukungnya.
 3. **Dampak per emosi berbeda:** F1 neutral turun 0,14 dan surprised turun 0,11, sedangkan fearful naik 0,12 (validation). Bahan error analysis.
-4. **Skor demo bukan probabilitas.** SVC dilatih dengan `probability=False`; skor adalah softmax dari `decision_function`.
+4. **Skor demo.** Model P0 memakai skor relatif (softmax `decision_function`). Model final memakai `probability=True` (Platt scaling), sehingga label `predict()` bisa berbeda dari probabilitas tertinggi pada 5–9% sampel. Tabel test memakai `predict()`.
+5. **Model final dilatih ulang di train + validation (aktor 1–20)** sesuai langkah 8 Rencana Kerja B. Hyperparameter SVM 90 fitur (`gamma = 0,005`) dan SVM 52 fitur (`gamma = 'scale'`) diambil dari tuning masing-masing; **RF 52 fitur memakai hyperparameter RF 90 fitur tanpa tuning ulang**. Catat di Method.
+6. Macro F1 5-fold GroupKFold di train + validation (diagnostik, bukan tuning): SVM 90 fitur 0,4868 ± 0,0448; SVM 52 fitur 0,5034 ± 0,0576; RF 90 fitur 0,4292 ± 0,0358; RF 52 fitur 0,4394 ± 0,0445. B memakai simpangan baku populasi.
 
 ---
 
@@ -241,13 +251,13 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 >
 > 1. **Interface inference sudah aku uji dan jalan.** WAV, FLAC, stereo, dan array numpy semuanya berhasil, dan model menghasilkan macro F1 validation 0,4995, sama dengan laporanmu. Tiga penanganan input (file rusak, audio hening, tampilan skor) aku tangani di sisi demo, jadi `inference.py` tidak perlu diubah.
 > 2. **Temuan audit (WARN):** run stabilitas P1–P4 memakai aktor 21–24 di train/validation, padahal `partitions.json` meminta run ini setelah hasil utama final. Model P0 tidak terpengaruh, tapi angka validation P4 dihitung di aktor test. Tolong jangan ubah SA, λ, atau model berdasarkan angka P4. Detailnya di `docs/audit_anti_leakage.md`.
-> 3. **Yang aku butuhkan untuk evaluasi test (langkah 7 Rencana Kerja):**
->    - `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (untuk audit dan reproduksi)
->    - Model final per metode di `models/<method>.joblib`, dilatih ulang di train + validation, minimal SVM 90 fitur dan SVM subset SA
->    - Pembanding: hill climbing, 30 random subset, sweep λ, ensemble
->    - Log per run `logs/sa_<run_id>.csv` untuk kurva konvergensi
-> 4. Rencana Kerja meminta SA 5 seed di split utama; sekarang ada 3. Kalau tidak sempat, kita catat sebagai keterbatasan.
-> 5. Untuk simpangan baku k, punyamu 5,59 (populasi) dan punyaku 5,79 (sampel). Kita pakai yang mana di paper?
+> 3. **Terima kasih untuk 3 skrip dan 4 model final (`1a1b51b`).** Sudah aku audit: skrip tidak membaca test, keempat model di-fit hanya pada aktor 1–20, dan demo sudah memakai model 90 vs 52 fitur berdampingan.
+> 4. **Pembanding hill climbing, 30 random subset, sweep λ, dan ensemble: jadi dibuat atau tidak?** Setiap metode hanya bisa dievaluasi sekali di test, jadi aku tunda evaluasi test sampai daftar metode final. Kalau tidak sempat, kita catat sebagai keterbatasan dan aku evaluasi 4 model yang ada.
+> 5. RF 52 fitur memakai hyperparameter RF 90 fitur tanpa tuning ulang. Sengaja? Akan aku tulis di Method.
+> 6. Log per run `logs/sa_<run_id>.csv` belum ada; untuk sekarang kurva di demo aku ambil dari `history` di `sa_main_results.json`.
+> 7. Rencana Kerja meminta SA 5 seed di split utama; sekarang ada 3. Kalau tidak sempat, kita catat sebagai keterbatasan.
+> 8. Untuk simpangan baku, punyamu memakai populasi (mis. k 5,59) dan punyaku sampel (5,79). Kita pakai yang mana di paper?
+> 9. Gambar di `progres_anggota_b/figures/` yang masuk paper perlu versi bahasa Inggris.
 >
 > Terima kasih!
 
@@ -276,6 +286,8 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | Analisis stabilitas tanpa label: `src/stability.py`, `src/run_stability_analysis.py`, 2 gambar; heatmap ditambahkan ke demo; 17 tes lolos |
 | 24 November 2026 | Audit anti-leakage: `src/audit_leakage.py`, `docs/audit_anti_leakage.md`; `README.md` utama ditulis |
 | 24 November 2026 | Keputusan sementara: paper dan judul gambar paper berbahasa Inggris (menunggu konfirmasi dosen); gambar stabilitas diubah ke bahasa Inggris |
+| 24 November 2026 | Pekerjaan C di-push (5 commit, `9cb6627`–`adc91ad`) |
+| 24 November 2026 | B push 3 skrip dan 4 model final (`1a1b51b`). Audit v1.1 diulang: 10 OK, 1 WARN, 1 PENDING, 0 FAIL. Demo v0.2: kurva SA interaktif dan model final 90 vs 52 fitur |
 
 ---
 
@@ -291,7 +303,8 @@ Centang langsung di dokumen setelah selesai.
 - [ ] Langkah 4: mini-eksperimen graph search (konfirmasi)
 - [ ] Langkah 5: proposal 1 halaman (konfirmasi)
 - [x] Langkah 6: audit anti-leakage dijalankan dan didokumentasikan
-- [ ] Langkah 6: audit ulang setelah skrip B dan MI dari A masuk
+- [x] Langkah 6: audit ulang setelah skrip dan model final B masuk
+- [ ] Langkah 6: audit ulang setelah MI dari A masuk
 - [ ] Langkah 7: evaluasi test sekali, CI bootstrap, McNemar, `main_table.csv`
 - [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
@@ -299,7 +312,8 @@ Centang langsung di dokumen setelah selesai.
 - [ ] Langkah 10: uji noise (test bersih, 20, 10, 0 dB)
 - [ ] Langkah 11: error analysis minimal 3 file
 - [x] Langkah 12: demo alpha 4 tab berjalan
-- [ ] Langkah 12: uji mikrofon dan file RAVDESS aktor 1–20; model 90 fitur di tab Coba sendiri; jalan di Colab/Spaces
+- [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA
+- [ ] Langkah 12: uji mikrofon dan file RAVDESS aktor 1–20; jalan di Colab/Spaces
 - [ ] Langkah 13: integrasi paper IEEE dan slide
 - [ ] Bahasa paper (Inggris) dikonfirmasi ke dosen
 - [x] Gambar stabilitas berbahasa Inggris untuk paper
@@ -307,7 +321,7 @@ Centang langsung di dokumen setelah selesai.
 
 **Repo**
 
-- [ ] Perubahan Anggota C di-commit dan di-push
+- [x] Perubahan Anggota C di-commit dan di-push (5 commit awal)
 - [ ] Isi `progres_anggota_b/` dipindah ke struktur utama (setelah sepakat dengan B), lalu path di `inference.py` dan `app.py` disesuaikan
 
 **Komunikasi**
@@ -320,5 +334,5 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Setelah model final B dan MI dari A tiba: jalankan audit ulang, lalu evaluasi test sekali (langkah 7), uji noise, error analysis, dan matriks transfer.
+3. Setelah daftar metode final disepakati (pembanding B) dan MI dari A tiba: jalankan audit ulang, lalu evaluasi test sekali (langkah 7), uji noise, error analysis, dan matriks transfer.
 4. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.
