@@ -2,12 +2,14 @@
 audit_leakage.py - Audit anti-leakage Proyek 07 (langkah 6 Rencana Kerja, Anggota C).
 
 Penanggung jawab : Anggota C
-Versi            : 1.0 (24 November 2026)
+Versi            : 1.1 (24 November 2026) - model final di models/ dan skrip B di
+                   progres_anggota_b/ (rekursif) serta train_final_models.py ikut diaudit
 
 Memeriksa, tanpa membuka label atau fitur data test untuk evaluasi:
   1. Aktor tidak tumpang tindih antar-split (split utama dan 5 partisi)
   2. Setiap split punya kedua gender dan 8 emosi; tabel fitur lengkap tanpa NaN
-  3. Scaler berada di dalam Pipeline dan di-fit hanya pada data train
+  3. Scaler berada di dalam Pipeline dan di-fit hanya pada train (model P0) atau
+     train + validation (model final), tanpa aktor test
   4. Kode dan notebook Anggota B tidak membaca data test
   5. Mutual information dihitung di train saja
   6. Data test belum dievaluasi sebelum evaluasi akhir
@@ -38,9 +40,22 @@ import evaluate as ev  # noqa: E402
 
 B_DIR = os.path.join(ROOT, 'progres_anggota_b')
 MODEL_PATH = os.path.join(B_DIR, 'models', 'best_model_p0.joblib')
+FINAL_DIR = os.path.join(ROOT, 'models')
 B_SCRIPTS = ['run_baseline.py', 'run_sa_main.py', 'run_sa_stability.py']
+# Kode B di luar progres_anggota_b/. Tambahkan di sini bila B menaruh skrip baru di root.
+B_ROOT_FILES = ['train_final_models.py']
 # Baris kode yang membaca atau menamai data test (komentar diabaikan)
 TEST_PATTERN = re.compile(r"\b(te|test|X_te|y_te|te_\w+|test_\w+)\s*=|\[['\"]test['\"]\]|test_noisy|features/noisy")
+# Pengecualian: hanya daftar NOMOR aktor test (mis. untuk assert tidak tumpang tindih),
+# selama baris itu tidak memfilter tabel data.
+ACTOR_LIST_ONLY = re.compile(r"\btest_actors\w*\s*=")
+DATA_ACCESS = re.compile(r"isin|\.loc|\.iloc|read_csv|\bdf\b|_df\b|frame")
+
+
+def reads_test(code):
+    if not TEST_PATTERN.search(code):
+        return False
+    return not (ACTOR_LIST_ONLY.search(code) and not DATA_ACCESS.search(code))
 
 results = []
 
@@ -104,18 +119,43 @@ def main():
           'OK' if ok else 'FAIL',
           f'langkah {steps}; scaler melihat {n_seen} sampel, train P0 = {n_train} file; '
           f"trained_on = {bundle.get('trained_on')}")
+    finals = sorted(glob.glob(os.path.join(FINAL_DIR, '*.joblib')))
+    n_trval = int(df['actor'].isin(splits['train'] + splits['validation']).sum())
+    with open(os.path.join(B_DIR, 'results', 'sa_main_results.json'), encoding='utf-8') as f:
+        sa_idx = json.load(f)['selected_indices']
+    rows, ok = [], bool(finals)
+    for p in finals:
+        b = joblib.load(p)
+        sc = b['pipeline'].steps[0][1]
+        n = int(getattr(sc, 'n_samples_seen_', -1))
+        actors = set(b.get('train_val_actors', []))
+        good = (type(sc).__name__ == 'StandardScaler' and n == n_trval
+                and actors == set(splits['train'] + splits['validation']) and not actors & test_actors)
+        if b.get('n_features') == len(sa_idx) and b['selected_indices'] != sa_idx:
+            good = False  # subset SA berbeda dari hasil SA utama
+        ok = ok and good
+        rows.append(f"{os.path.basename(p)}: scaler {n} sampel, k={b.get('n_features')}"
+                    f"{'' if good else ' (BERMASALAH)'}")
+    check(3, 'Model final models/*.joblib: di-fit pada train + validation saja (aktor 1-20)',
+          ('OK' if ok else 'FAIL') if finals else 'PENDING',
+          (f"train + validation = {n_trval} file; " + '; '.join(rows)) if finals
+          else 'model final belum ada di models/')
     sa_src = open(os.path.join(B_DIR, 'src', 'sa_feature_selection.py'), encoding='utf-8').read()
     ok = 'GroupKFold' in sa_src and 'scaler.fit_transform(X_tr[tr_idx])' in sa_src
     check(3, 'Objective SA: scaler di-fit per fold GroupKFold di dalam train', 'OK' if ok else 'FAIL',
           'sa_feature_selection._precompute_scaled_folds memakai fold train saja')
 
     # 4. Kode B tidak membaca test
-    files = sorted(glob.glob(os.path.join(B_DIR, 'src', '*.py')) +
-                   glob.glob(os.path.join(B_DIR, 'notebooks', '*.ipynb')))
+    files = sorted(glob.glob(os.path.join(B_DIR, '**', '*.py'), recursive=True) +
+                   glob.glob(os.path.join(B_DIR, '**', '*.ipynb'), recursive=True) +
+                   [os.path.join(ROOT, f) for f in B_ROOT_FILES if os.path.exists(os.path.join(ROOT, f))])
+    files = [p for p in files if '.ipynb_checkpoints' not in p]
     hits = [f'{os.path.relpath(p, ROOT)}:{i}: {c.strip()}' for p in files for i, c in code_lines(p)
-            if TEST_PATTERN.search(c)]
+            if reads_test(c)]
     check(4, 'Kode dan notebook Anggota B tidak membaca data test', 'FAIL' if hits else 'OK',
-          '; '.join(hits) or f'{len(files)} file diperiksa; bagian test dari split_frames dibuang (_)')
+          '; '.join(hits) or f'{len(files)} file diperiksa ('
+          + ', '.join(os.path.relpath(p, ROOT).replace(os.sep, '/') for p in files)
+          + '); bagian test dari split_frames selalu dibuang (_)')
     missing = [s for s in B_SCRIPTS if not glob.glob(os.path.join(ROOT, '**', s), recursive=True)]
     check(4, 'Skrip yang menjalankan eksperimen B tersedia untuk diaudit', 'PENDING' if missing else 'OK',
           f"belum ada di repo: {', '.join(missing)}" if missing else 'semua tersedia')

@@ -1,5 +1,5 @@
 {
-  "audited_at": "2026-11-24T11:12:06",
+  "audited_at": "2026-11-24T13:44:22",
   "results": [
     {
       "no": 1,
@@ -33,6 +33,12 @@
     },
     {
       "no": 3,
+      "check": "Model final models/*.joblib: di-fit pada train + validation saja (aktor 1-20)",
+      "status": "OK",
+      "detail": "train + validation = 1200 file; rf_all90_final.joblib: scaler 1200 sampel, k=90; rf_sa52_final.joblib: scaler 1200 sampel, k=52; svm_all90_final.joblib: scaler 1200 sampel, k=90; svm_sa52_final.joblib: scaler 1200 sampel, k=52"
+    },
+    {
+      "no": 3,
       "check": "Objective SA: scaler di-fit per fold GroupKFold di dalam train",
       "status": "OK",
       "detail": "sa_feature_selection._precompute_scaled_folds memakai fold train saja"
@@ -41,13 +47,13 @@
       "no": 4,
       "check": "Kode dan notebook Anggota B tidak membaca data test",
       "status": "OK",
-      "detail": "6 file diperiksa; bagian test dari split_frames dibuang (_)"
+      "detail": "10 file diperiksa (progres_anggota_b/notebooks/Langkah_AnggotaB_01_Baseline_Normalisasi.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_02_SA_Utama.ipynb, progres_anggota_b/notebooks/Langkah_AnggotaB_03_SA_Stabilitas.ipynb, progres_anggota_b/scripts/run_baseline.py, progres_anggota_b/scripts/run_sa_main.py, progres_anggota_b/scripts/run_sa_stability.py, progres_anggota_b/src/baseline.py, progres_anggota_b/src/inference.py, progres_anggota_b/src/sa_feature_selection.py, train_final_models.py); bagian test dari split_frames selalu dibuang (_)"
     },
     {
       "no": 4,
       "check": "Skrip yang menjalankan eksperimen B tersedia untuk diaudit",
-      "status": "PENDING",
-      "detail": "belum ada di repo: run_baseline.py, run_sa_main.py, run_sa_stability.py"
+      "status": "OK",
+      "detail": "semua tersedia"
     },
     {
       "no": 4,
