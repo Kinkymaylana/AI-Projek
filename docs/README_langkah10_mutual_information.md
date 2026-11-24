@@ -30,19 +30,21 @@ Menyediakan pembanding *filter method* untuk SA: 52 fitur dengan mutual informat
 - Per kelompok: mfcc 17/26, delta_mfcc 10/26, prosodi 6/6, energi 0/3, zcr 0/2, spektral 6/8, contrast 6/7, chroma 7/12.
 - Peringkat fitur energi: rms_mean #79, rms_std #68, rms_max #72.
 - Redundansi: top-52 mencakup 39 kelompok redundan, dengan 13 fitur kembaran.
+- Dibanding SA (52 fitur, 44 kelompok redundan, 8 fitur kembaran): 29 fitur sama; Jaccard per fitur 0.387, per kelompok 0.456.
 
 ### Pratinjau evaluasi di validation (protokol Anggota B)
 
 | Subset | k | Val macro F1 (SVM tetap: RBF, C=1, gamma=scale) | CV macro F1 train (tuning) | Val macro F1 (tuning) | Parameter terbaik |
 | --- | --- | --- | --- | --- | --- |
 | Semua 90 fitur | 90 | 0.5144 | 0.4901 | 0.5165 | C=1.0, gamma=0.005, kernel=rbf |
+| SA (52 fitur) | 52 | 0.4995 | 0.5224 | 0.4995 | C=1.0, gamma=scale, kernel=rbf |
 | MI top-52 | 52 | 0.4658 | 0.4818 | 0.4205 | C=0.01, kernel=linear |
 
 Angka resmi untuk paper berasal dari evaluasi Anggota B dan fungsi `evaluate()` Anggota C. Data test tidak dipakai di langkah ini.
 
 ## Verifikasi
 
-7/7 pemeriksaan OK.
+8/8 pemeriksaan OK.
 
 - [OK] MI dihitung hanya di train (aktor 1-16, 960 baris) — (960, 90)
 - [OK] Data test (aktor 21-24) tidak ada di data yang dipakai
@@ -51,6 +53,7 @@ Angka resmi untuk paper berasal dari evaluasi Anggota B dan fungsi `evaluate()` 
 - [OK] Top-52 stabil terhadap seed estimator (Jaccard min >= 0,9) — min 1.000
 - [OK] File untuk B tersimpan dan isinya sama
 - [OK] Format mengikuti kontrak subsets.json (run_id, method, seed, lambda, partition, indices)
+- [OK] Pratinjau mereproduksi val macro F1 SA milik B (selisih < 0,005) — notebook 0.4995 vs B 0.4995
 
 ## Keterbatasan
 
