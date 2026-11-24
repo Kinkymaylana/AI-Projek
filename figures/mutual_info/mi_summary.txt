@@ -1,0 +1,26 @@
+Ringkasan mutual information (langkah 10, 2026-11-24)
+config_hash mutual_info: eccc001f3d | fitur: 0c3114fc78 | scikit-learn 1.6.1
+
+Data: train split utama (aktor 1-16, 960 baris), versi peak, 90 fitur
+Estimator: mutual_info_classif, n_neighbors=3, rata-rata 10 seed
+k = 52 (SA utama Anggota B (P0, seed 42); median 3 seed SA di P0 = 52 (52, 52, 54))
+Kestabilan top-52 antar seed: Jaccard min 1.000
+
+15 fitur MI tertinggi: dmfcc04_std (0.221), f0_mean (0.217), f0_p05 (0.173), mfcc02_mean (0.169), chroma09_mean (0.169), dmfcc12_std (0.162), dmfcc02_std (0.154), f0_range (0.153), mfcc04_std (0.147), f0_std (0.140), f0_p95 (0.137), mfcc01_mean (0.135), rolloff_mean (0.135), chroma08_mean (0.134), mfcc13_std (0.134)
+Peringkat fitur energi: rms_mean #79, rms_std #68, rms_max #72
+
+Top-52 per kelompok: mfcc 17/26, delta_mfcc 10/26, prosodi 6/6, energi 0/3, zcr 0/2, spektral 6/8, contrast 6/7, chroma 7/12
+Top-52: 39 kelompok redundan, 13 fitur kembaran
+
+Pratinjau validation (protokol B; angka resmi dari B/C):
+  Semua 90 fitur   k=90  val F1 SVM tetap 0.5144 | CV F1 tuning 0.4901 | val F1 tuning 0.5165 (C=1.0, gamma=0.005, kernel=rbf)
+  MI top-52        k=52  val F1 SVM tetap 0.4658 | CV F1 tuning 0.4818 | val F1 tuning 0.4205 (C=0.01, kernel=linear)
+
+Verifikasi: 7/7 OK
+  [OK] MI dihitung hanya di train (aktor 1-16, 960 baris) — (960, 90)
+  [OK] Data test (aktor 21-24) tidak ada di data yang dipakai
+  [OK] Skor MI lengkap untuk 90 fitur, tanpa NaN, tidak negatif
+  [OK] Top-52 berisi 52 indeks unik di rentang 0-89
+  [OK] Top-52 stabil terhadap seed estimator (Jaccard min >= 0,9) — min 1.000
+  [OK] File untuk B tersimpan dan isinya sama
+  [OK] Format mengikuti kontrak subsets.json (run_id, method, seed, lambda, partition, indices)
