@@ -183,29 +183,34 @@ def fig_summary(s, path):
     plt.close(fig)
 
 
-def fig_transfer(names, m, path):
+def fig_transfer(names, m, base, path):
+    """Baris = subset (SA dari partisi i, lalu semua 90 fitur); kolom = partisi evaluasi."""
     import matplotlib.pyplot as plt
     from matplotlib.colors import LinearSegmentedColormap
 
+    full = np.vstack([m, base])
+    rows = [f'SA {p}' for p in names] + ['All 90']
     cmap = LinearSegmentedColormap.from_list('biru', ['#cde2fb', '#6da7ec', '#2a78d6', '#184f95', '#0d366b'])
-    fig, ax = plt.subplots(figsize=(5.6, 4.6), facecolor=SURFACE)
-    im = ax.imshow(m, cmap=cmap)
-    lo, hi = m.min(), m.max()
-    for i in range(len(names)):
+    fig, ax = plt.subplots(figsize=(5.8, 5.2), facecolor=SURFACE)
+    im = ax.imshow(full, cmap=cmap)
+    lo, hi = full.min(), full.max()
+    for i in range(len(rows)):
         for j in range(len(names)):
-            light = (m[i, j] - lo) / ((hi - lo) or 1) > 0.55
-            ax.text(j, i, num(m[i, j]), ha='center', va='center', fontsize=9,
-                    color='#ffffff' if light else INK)
+            light = (full[i, j] - lo) / ((hi - lo) or 1) > 0.55
+            ax.text(j, i, num(full[i, j]), ha='center', va='center', fontsize=9,
+                    color='#ffffff' if light else INK, fontweight='bold' if i == j else 'normal')
+    ax.axhline(len(names) - 0.5, color=SURFACE, lw=4)
     ax.set_xticks(range(len(names)))
-    ax.set_yticks(range(len(names)))
+    ax.set_yticks(range(len(rows)))
     ax.set_xticklabels(names)
-    ax.set_yticklabels(names)
-    ax.set_xlabel('Evaluated on partition (validation)')
-    ax.set_ylabel('Subset selected on partition')
+    ax.set_yticklabels(rows)
+    ax.set_xlabel('Trained and evaluated on partition (train / validation)')
+    ax.set_ylabel('Feature subset (SA run selected on partition)')
     for s in ax.spines.values():
         s.set_visible(False)
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label='Macro F1 (mean over 3 seeds)')
-    ax.set_title('Transfer matrix of SA subsets', loc='left', fontsize=11)
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label='Validation macro F1')
+    ax.set_title('Transfer of SA subsets across speaker partitions\n'
+                 '(SA rows: mean of 3 seeds; bold = own partition)', loc='left', fontsize=10)
     fig.tight_layout()
     fig.savefig(path, dpi=200, facecolor=SURFACE)
     plt.close(fig)
@@ -241,7 +246,13 @@ def run_transfer(sub, parts, names):
         return Pipeline([('scaler', StandardScaler()),
                          ('clf', SVC(class_weight='balanced', random_state=42, **params))])
 
-    return st.transfer_matrix(by_part, data, make, lambda yt, yp: ev.evaluate(yt, yp)['macro_f1'])
+    score = lambda yt, yp: ev.evaluate(yt, yp)['macro_f1']  # noqa: E731
+    tnames, m = st.transfer_matrix(by_part, data, make, score)
+    # Baris pembanding: semua 90 fitur, model dan protokol sama, per partisi evaluasi.
+    full = list(range(len(cols)))
+    base = np.array([score(data[p][3], make().fit(data[p][0][:, full], data[p][1]).predict(data[p][2][:, full]))
+                     for p in tnames])
+    return tnames, m, base
 
 
 def main():
@@ -265,11 +276,18 @@ def main():
         if not test_recorded():
             sys.exit('Ditolak: matriks transfer memakai aktor 21-24 (P1-P4). Jalankan setelah hasil test '
                      'tercatat di results/main_table.csv (aturan partitions.json).')
-        tnames, m = run_transfer(sub, parts, names)
-        pd.DataFrame(m, index=tnames, columns=tnames).to_csv(os.path.join(RESULTS_DIR, 'stability_transfer.csv'))
-        fig_transfer(tnames, m, os.path.join(FIG_DIR, 'stab_03_transfer.png'))
+        tnames, m, base = run_transfer(sub, parts, names)
+        table = pd.DataFrame(np.vstack([m, base]), index=[f'SA {p}' for p in tnames] + ['All 90'],
+                             columns=tnames)
+        table.index.name = 'subset'
+        table.to_csv(os.path.join(RESULTS_DIR, 'stability_transfer.csv'))
+        fig_transfer(tnames, m, base, os.path.join(FIG_DIR, 'stab_03_transfer.png'))
+        off = ~np.eye(len(m), dtype=bool)
         summary['transfer_diagonal_mean'] = float(np.mean(np.diag(m)))
-        summary['transfer_offdiagonal_mean'] = float(m[~np.eye(len(m), dtype=bool)].mean())
+        summary['transfer_offdiagonal_mean'] = float(m[off].mean())
+        summary['transfer_all90_mean'] = float(base.mean())
+        summary['transfer_columns_mean_sa'] = {p: float(m[:, j].mean()) for j, p in enumerate(tnames)}
+        summary['transfer_all90_by_partition'] = {p: float(v) for p, v in zip(tnames, base)}
 
     with open(os.path.join(RESULTS_DIR, 'stability_summary.json'), 'w', encoding='utf-8') as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
@@ -287,7 +305,7 @@ def main():
     print('Tidak pernah    :', ', '.join(s['never_selected']) or '-')
     if 'transfer_diagonal_mean' in s:
         print(f"Transfer: diagonal {koma(s['transfer_diagonal_mean'])} | luar diagonal "
-              f"{koma(s['transfer_offdiagonal_mean'])}")
+              f"{koma(s['transfer_offdiagonal_mean'])} | semua 90 fitur {koma(s['transfer_all90_mean'])}")
 
 
 if __name__ == '__main__':

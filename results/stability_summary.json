@@ -35,5 +35,22 @@
   ],
   "never_selected": [],
   "source": "progres_anggota_b/results/subsets.json",
-  "stability_version": "1.0"
+  "stability_version": "1.0",
+  "transfer_diagonal_mean": 0.47345651641887027,
+  "transfer_offdiagonal_mean": 0.4842490927041966,
+  "transfer_all90_mean": 0.48857467944987987,
+  "transfer_columns_mean_sa": {
+    "P0": 0.49197412160611986,
+    "P1": 0.5020374201389246,
+    "P2": 0.47620890254699333,
+    "P3": 0.4627095070536863,
+    "P4": 0.4775229358899321
+  },
+  "transfer_all90_by_partition": {
+    "P0": 0.5144437509731691,
+    "P1": 0.5280642442263184,
+    "P2": 0.42455099778406397,
+    "P3": 0.5084229639084449,
+    "P4": 0.4673914403574033
+  }
 }

@@ -2,11 +2,15 @@
 
 ## Ringkasan
 
-Pekerjaan per 24 November 2026: modul evaluasi bersama (`src/evaluate.py`) selesai dan teruji, interface inference Anggota B sudah diverifikasi dan dipakai di demo Gradio 4 tab (`app.py`), audit anti-leakage sudah dijalankan (0 FAIL, 1 WARN, 1 PENDING), dan analisis stabilitas yang tidak memerlukan label sudah selesai. Temuan utamanya: subset SA hanya sedikit lebih stabil daripada subset acak berukuran sama (indeks Nogueira 0,106).
+Pekerjaan per 24 November 2026 malam: semua masukan A dan B sudah masuk (12 model final), audit anti-leakage 11 OK, 1 WARN, 0 FAIL, dan evaluasi test serta uji noise sudah dijalankan masing-masing **sekali** dan dikunci.
 
-Pada 24 November 2026 Anggota B menyerahkan tiga skrip eksperimen dan empat model final (commit `1a1b51b`). Audit diulang (0 FAIL), dan demo kini membandingkan model final 90 fitur dan 52 fitur secara berdampingan.
+Temuan utama:
 
-Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dijalankan. Model final SVM/RF sudah ada, tetapi pembanding hill climbing, random subset, sweep λ, dan ensemble dari B serta mutual information dari A belum ada. Evaluasi test ditunda sampai grup memastikan pembanding mana yang akan dibuat, karena setiap metode hanya boleh dievaluasi sekali di test.
+- **Test bersih:** SVM dengan subset SA (52 fitur) tidak dapat dibedakan dari 90 fitur (macro F1 0,469 vs 0,469; selisih CI [−0,045; +0,052]).
+- **Noise:** subset SA tidak lebih rapuh daripada 90 fitur. White noise meruntuhkan SVM RBF ke satu kelas bahkan pada 20 dB; ESC-50 menurunkan performa bertahap.
+- **Stabilitas:** subset SA hanya sedikit lebih stabil daripada subset acak (Nogueira 0,106), tetapi subset dari partisi mana pun berpindah ke partisi lain sama baiknya (matriks transfer: diagonal 0,473, luar diagonal 0,484, semua 90 fitur 0,489).
+
+Sisa pekerjaan: error analysis (butuh audio aktor 21–24), uji demo dengan mikrofon, serta integrasi paper dan slide.
 
 | Langkah (Rencana Kerja) | Status | Hasil utama |
 | --- | --- | --- |
@@ -16,15 +20,15 @@ Evaluasi test sekali, uji noise, error analysis, dan matriks transfer belum dija
 | 4. Mini-eksperimen graph search (Minggu 5) | Belum tercatat di repo | Perlu dikonfirmasi |
 | 5. Proposal 1 halaman (Minggu 7) | Belum tercatat di repo | Perlu dikonfirmasi |
 | 6. Audit anti-leakage | Selesai, diulang setelah file baru masuk | `src/audit_leakage.py`, `docs/audit_anti_leakage.md` |
-| 7. Evaluasi test sekali | Menunggu | Model final SVM/RF (90 dan 52 fitur) sudah ada; menunggu kepastian pembanding B dan MI dari A |
-| 8. Gambar hasil | Sebagian | Gambar stabilitas selesai; trade-off λ dan confusion matrix menunggu |
-| 9. Analisis stabilitas | Sebagian | Heatmap, Jaccard, Nogueira, kelompok redundan selesai; matriks transfer dikunci sampai test tercatat |
-| 10. Uji noise | Menunggu langkah 7 | Tabel test bernoise dari A sudah siap |
-| 11. Error analysis | Menunggu langkah 7 | 2 file test tanpa nada (aktor 21) sudah dicatat A |
+| 7. Evaluasi test sekali | Selesai | 12 metode; `results/main_table.csv`, `results/test_eval/` |
+| 8. Gambar hasil | Selesai | Confusion matrix, noise, trade-off λ, transfer (bahasa Inggris) |
+| 9. Analisis stabilitas | Selesai | Heatmap, Jaccard, Nogueira, kelompok redundan, matriks transfer 5 × 5 |
+| 10. Uji noise | Selesai | 6 kondisi × 12 metode; `results/noise_eval/` |
+| 11. Error analysis | Belum | Prioritas kelas sad; perlu audio aktor 21–24 |
 | 12. Demo Gradio | Alpha berjalan | 4 tab di `app.py` v0.2: kurva SA interaktif dari history, probabilitas model final 90 vs 52 fitur berdampingan |
 | 13. Integrasi paper dan slide | Belum | — |
 
-**Jaminan anti-leakage:** data test (aktor 21–24) belum pernah dievaluasi oleh C. Semua pengujian demo memakai audio sintetis, dan pengecekan model memakai validation (aktor 17–20).
+**Jaminan anti-leakage:** data test (aktor 21–24) dievaluasi tepat sekali untuk kondisi bersih (20.11 WIB) dan sekali untuk noise (20.45 WIB), setelah grup mengonfirmasi daftar 12 metode. Kunci `TEST_DONE.json` dan `NOISE_DONE.json` mencegah run ulang. Tidak ada model, subset, atau λ yang diubah setelahnya.
 
 ---
 
@@ -290,9 +294,29 @@ Pembanding lain: tumpang-tindih aktor train antarpartisi (Jaccard) 0,467. Jumlah
 | Simpangan baku sampel (ddof = 1) | B melaporkan 5,59 (simpangan baku populasi); skrip C menghasilkan 5,79. **Perlu disepakati satu rumus sebelum paper.** |
 | Matriks transfer 5 × 5 dikunci sampai hasil test tercatat | Partisi P1–P4 memakai aktor 21–24; `partitions.json` meminta run ini setelah hasil utama final. Skrip menolak `--transfer` sebelum ada baris test di `main_table.csv`. |
 
+### Matriks transfer 5 × 5 (dijalankan 24 November 2026, setelah test tercatat)
+
+`src/run_stability_analysis.py --transfer`: setiap subset SA dari partisi i (3 seed) dilatih di train partisi j dan dinilai di validation j, dengan SVM yang sama dengan objective SA (C = 1, gamma = scale, class_weight balanced). Ditambah baris pembanding semua 90 fitur. Hasil: `results/stability_transfer.csv`, `figures/stability/stab_03_transfer.png`.
+
+| Subset ↓ / dinilai di → | P0 | P1 | P2 | P3 | P4 |
+| --- | --- | --- | --- | --- | --- |
+| SA P0 | **0,497** | 0,514 | 0,461 | 0,472 | 0,458 |
+| SA P1 | 0,442 | **0,503** | 0,502 | 0,464 | 0,501 |
+| SA P2 | 0,504 | 0,484 | **0,461** | 0,480 | 0,497 |
+| SA P3 | 0,510 | 0,506 | 0,470 | **0,459** | 0,485 |
+| SA P4 | 0,506 | 0,504 | 0,487 | 0,438 | **0,447** |
+| Semua 90 fitur | 0,514 | 0,528 | 0,425 | 0,508 | 0,467 |
+
+Interpretasi:
+
+1. **Subset tidak "overfit" ke partisinya sendiri.** Rata-rata diagonal (subset dinilai di partisi asalnya) 0,473, justru sedikit di bawah luar diagonal 0,484. Subset yang dipilih SA pada speaker tertentu dapat dipakai pada speaker lain tanpa kehilangan performa.
+2. **Subset berbeda, performa serupa.** Bersama Nogueira yang rendah (0,106), ini mendukung penjelasan di langkah 11 Anggota A: banyak fitur saling menggantikan, jadi SA memilih kombinasi berbeda yang sama baiknya.
+3. **Subset SA rata-rata setara dengan 90 fitur** (0,484 vs 0,489). Rata-rata per kolom (partisi evaluasi) berkisar 0,463 (P3) sampai 0,502 (P1), sedangkan rata-rata per baris (subset) hanya 0,476–0,486. Jadi speaker mana yang diuji lebih menentukan skor daripada subset SA mana yang dipakai.
+4. Baris "Semua 90 fitur" di P0 (0,5144) sama dengan pratinjau A untuk SVM tetap, sebagai cek konsistensi.
+5. **Catatan:** P1–P4 memakai aktor 21–24, sehingga matriks ini dijalankan setelah test tercatat, dan angkanya tidak dipakai untuk memilih apa pun.
+
 ### Sisa langkah 9
 
-- Matriks transfer 5 × 5 (`src/run_stability_analysis.py --transfer`) setelah evaluasi test.
 - Jika B menambah seed SA di split utama menjadi 5 (sesuai Rencana Kerja), jalankan ulang skrip.
 
 ---
@@ -426,6 +450,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | PR #2 A (branch `ito`): `mi_topk_peak.json`, kolom `in_sa_subset` (top-52 sama dengan yang dipakai B), bahan paper A. Nama log A kembali diganti di branch; C memulihkan nama (`dbf43eb`), lalu PR di-merge (`1c5a521`). Audit 11 OK, 1 WARN, 0 FAIL; dryrun 12/12; 24 tes lolos |
 | 24 November 2026 | Grup mengonfirmasi 12 metode final. **Evaluasi test sekali** dijalankan Anggota C (20.11 WIB): SVM_SA52 0,469 vs SVM_all90 0,469 (selisih +0,001, CI [−0,045; +0,052]). Gambar confusion matrix bahasa Inggris dibuat dari hasil tersimpan |
 | 24 November 2026 | Skrip uji noise di-push (`324ff3f`). **Uji noise sekali** dijalankan Anggota C (20.45 WIB): white noise meruntuhkan SVM RBF ke satu kelas di semua SNR; ESC-50 turun bertahap; SA-52 tidak lebih rapuh daripada 90 fitur |
+| 24 November 2026 | Matriks transfer 5 × 5 (+ baris 90 fitur): diagonal 0,473, luar diagonal 0,484, 90 fitur 0,489. Gambar trade-off λ dua panel untuk paper |
 
 ---
 
@@ -445,9 +470,9 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 6: audit ulang setelah pembanding B dan MI/MLP dari A masuk (11 OK, 1 WARN, 0 FAIL)
 - [x] Langkah 7: skrip `run_test_evaluation.py` siap; dryrun validation 11/11 model cocok; 7 tes
 - [x] Langkah 7: evaluasi test sekali (24 November 2026 20.11), CI bootstrap, McNemar, `main_table.csv` 12 baris
-- [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
+- [x] Langkah 8: trade-off λ (`figures/lambda/lambda_tradeoff_en.png`, dua panel tanpa sumbu ganda) dan confusion matrix full vs selected (`figures/test_eval/cm_*_en.png`)
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
-- [ ] Langkah 9: matriks transfer 5 × 5 (setelah test)
+- [x] Langkah 9: matriks transfer 5 × 5 + baris 90 fitur (diagonal 0,473, luar diagonal 0,484)
 - [x] Langkah 10: skrip uji noise siap; mode check SIAP; 3 tes
 - [x] Langkah 10: uji noise dijalankan sekali (24 November 2026 20.45); 72 baris; gambar bahasa Inggris
 - [ ] Langkah 11: error analysis minimal 3 file
@@ -474,6 +499,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Evaluasi test bersih dan uji noise sudah selesai. Berikutnya: error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), matriks transfer 5 × 5, trade-off λ, dan confusion matrix full vs selected untuk paper.
+3. Evaluasi test bersih, uji noise, matriks transfer, dan gambar paper sudah selesai. Berikutnya: error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), lalu paper IEEE dan slide.
 4. Bagikan tabel hasil test ke grup; jangan ada model atau λ yang diubah setelah ini.
 5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.

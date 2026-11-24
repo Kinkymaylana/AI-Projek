@@ -61,6 +61,8 @@ Semua perintah dijalankan dari root repo.
 | Cek kesiapan uji noise (aman) | `.venv\Scripts\python.exe src\run_noise_evaluation.py` | status SIAP / BELUM SIAP |
 | Uji noise **sekali** (hanya C, setelah test bersih) | `.venv\Scripts\python.exe src\run_noise_evaluation.py --mode noise --confirm "EVALUASI NOISE SEKALI"` | `results/main_table.csv` (72 baris noise), `results/noise_eval/` |
 | Gambar paper dari hasil tersimpan | `.venv\Scripts\python.exe src\plot_test_figures.py` | `figures/test_eval/*_en.png` |
+| Gambar trade-off λ | `.venv\Scripts\python.exe src\plot_lambda_tradeoff.py` | `figures/lambda/lambda_tradeoff_en.png` |
+| Matriks transfer 5 × 5 (setelah test) | `.venv\Scripts\python.exe src\run_stability_analysis.py --transfer` | `results/stability_transfer.csv`, `figures/stability/stab_03_transfer.png` |
 | Evaluasi test **sekali** (hanya C) | `.venv\Scripts\python.exe src\run_test_evaluation.py --mode test --confirm "EVALUASI TEST SEKALI"` | `results/main_table.csv`, `results/test_eval/`, `figures/test_eval/` |
 | Membuat ulang fitur dari audio | `.venv\Scripts\python.exe extract_features.py --config config.json` | lihat `docs/README_extract_features.md` |
 | Melatih ulang model final | `.venv\Scripts\python.exe train_final_models.py` | `models/*.joblib`, lihat `docs/Panduan_Model_Final.md` |
@@ -86,7 +88,8 @@ AI-Projek/
 │   ├── audit_leakage.py      audit anti-leakage (C)
 │   ├── run_test_evaluation.py   uji coba di validation, lalu evaluasi test sekali (C)
 │   ├── run_noise_evaluation.py  uji noise sekali pada 6 kondisi test bernoise (C)
-│   └── plot_test_figures.py  gambar paper dari hasil test tersimpan (C)
+│   ├── plot_test_figures.py  gambar paper dari hasil test tersimpan (C)
+│   └── plot_lambda_tradeoff.py   gambar trade-off λ dari sweep B (C)
 ├── progres_anggota_b/        baseline, SA, model, inference (B; akan dipindah ke struktur utama)
 ├── tests/                    tes unit (C)
 ├── results/                  main_table.csv, ringkasan stabilitas, hasil audit
@@ -121,7 +124,8 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Skrip evaluasi test (C) | Siap; uji coba validation 12/12 model cocok dengan angka A/B |
 | Evaluasi test sekali (C) | Selesai 24 November 2026; `results/main_table.csv`, `results/test_eval/` |
 | Uji noise (C) | Selesai 24 November 2026; `results/noise_eval/` |
-| Error analysis, matriks transfer (C) | Berikutnya |
+| Matriks transfer 5 × 5, trade-off λ, gambar paper (C) | Selesai |
+| Error analysis (C) | Berikutnya; perlu audio aktor 21–24 |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama
