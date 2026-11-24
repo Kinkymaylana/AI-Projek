@@ -43,7 +43,7 @@ MODEL_PATH = os.path.join(B_DIR, 'models', 'best_model_p0.joblib')
 FINAL_DIR = os.path.join(ROOT, 'models')
 B_SCRIPTS = ['run_baseline.py', 'run_sa_main.py', 'run_sa_stability.py']
 # Kode B di luar progres_anggota_b/. Tambahkan di sini bila B menaruh skrip baru di root.
-B_ROOT_FILES = ['train_final_models.py']
+B_ROOT_FILES = ['train_final_models.py', 'run_comparators_and_curves.py']
 # Baris kode yang membaca atau menamai data test (komentar diabaikan)
 TEST_PATTERN = re.compile(r"\b(te|test|X_te|y_te|te_\w+|test_\w+)\s*=|\[['\"]test['\"]\]|test_noisy|features/noisy")
 # Pengecualian: hanya daftar NOMOR aktor test (mis. untuk assert tidak tumpang tindih),
@@ -119,8 +119,9 @@ def main():
           'OK' if ok else 'FAIL',
           f'langkah {steps}; scaler melihat {n_seen} sampel, train P0 = {n_train} file; '
           f"trained_on = {bundle.get('trained_on')}")
-    finals = sorted(glob.glob(os.path.join(FINAL_DIR, '*.joblib')))
+    finals = sorted(glob.glob(os.path.join(FINAL_DIR, '**', '*.joblib'), recursive=True))
     n_trval = int(df['actor'].isin(splits['train'] + splits['validation']).sum())
+    trval = set(splits['train'] + splits['validation'])
     with open(os.path.join(B_DIR, 'results', 'sa_main_results.json'), encoding='utf-8') as f:
         sa_idx = json.load(f)['selected_indices']
     rows, ok = [], bool(finals)
@@ -128,15 +129,19 @@ def main():
         b = joblib.load(p)
         sc = b['pipeline'].steps[0][1]
         n = int(getattr(sc, 'n_samples_seen_', -1))
-        actors = set(b.get('train_val_actors', []))
+        k = len(b['selected_indices'])
+        # Model A (MLP) tidak mencatat train_val_actors; jumlah sampel scaler tetap diperiksa.
+        actors = set(b.get('train_val_actors', trval))
         good = (type(sc).__name__ == 'StandardScaler' and n == n_trval
-                and actors == set(splits['train'] + splits['validation']) and not actors & test_actors)
-        if b.get('n_features') == len(sa_idx) and b['selected_indices'] != sa_idx:
+                and actors == trval and not actors & test_actors)
+        nama = os.path.relpath(p, FINAL_DIR).replace(os.sep, '/')
+        if 'sa52' in nama.lower() and b['selected_indices'] != sa_idx:
             good = False  # subset SA berbeda dari hasil SA utama
         ok = ok and good
-        rows.append(f"{os.path.basename(p)}: scaler {n} sampel, k={b.get('n_features')}"
+        rows.append(f"{nama}: scaler {n} sampel, k={k}"
+                    f"{'' if 'train_val_actors' in b else ', aktor tidak dicatat'}"
                     f"{'' if good else ' (BERMASALAH)'}")
-    check(3, 'Model final models/*.joblib: di-fit pada train + validation saja (aktor 1-20)',
+    check(3, f'Model final models/ ({len(finals)} file): di-fit pada train + validation saja (aktor 1-20)',
           ('OK' if ok else 'FAIL') if finals else 'PENDING',
           (f"train + validation = {n_trval} file; " + '; '.join(rows)) if finals
           else 'model final belum ada di models/')
@@ -171,10 +176,28 @@ def main():
            f"jadi tidak boleh dipakai untuk keputusan apa pun.") if touched else '-')
 
     # 5. Mutual information
-    mi = [p for p in glob.glob(os.path.join(ROOT, '**', '*'), recursive=True)
-          if re.search(r'(?i)(mutual|(^|[_\\/])mi_)', os.path.basename(p)) and '.venv' not in p]
-    check(5, 'Mutual information dihitung di train saja', 'PENDING' if not mi else 'CEK MANUAL',
-          'pembanding MI (langkah 10 Anggota A) belum ada' if not mi else ', '.join(mi))
+    # Kode yang memanggil mutual_info_classif harus memberi data train saja (X_tr / X_train).
+    kode = [p for p in glob.glob(os.path.join(ROOT, '**', '*.py'), recursive=True) +
+            glob.glob(os.path.join(ROOT, '**', '*.ipynb'), recursive=True)
+            if '.venv' not in p and '.ipynb_checkpoints' not in p and p != os.path.abspath(__file__)]
+    panggilan, salah = [], []
+    for p in kode:
+        for i, c in code_lines(p):
+            if 'mutual_info_classif(' in c:
+                rel = f'{os.path.relpath(p, ROOT)}:{i}'.replace(os.sep, '/')
+                panggilan.append(rel)
+                if not re.search(r'mutual_info_classif\(\s*X_(tr|train)\b', c):
+                    salah.append(f'{rel}: {c.strip()}')
+    topk = os.path.join(ROOT, 'data', 'analysis', 'mi_topk_peak.json')
+    if not panggilan:
+        check(5, 'Mutual information dihitung di train saja', 'PENDING',
+              'pembanding MI (langkah 10 Anggota A) belum ada')
+    else:
+        check(5, 'Mutual information dihitung di train saja', 'FAIL' if salah else 'OK',
+              '; '.join(salah) if salah else
+              f"mutual_info_classif dipanggil dengan data train di {', '.join(panggilan)}; "
+              + ('daftar top-k ada di data/analysis/mi_topk_peak.json' if os.path.exists(topk)
+                 else 'catatan: data/analysis/mi_topk_peak.json (daftar indeks untuk B) belum ada di repo'))
 
     # 6. Test belum dievaluasi
     rows = []

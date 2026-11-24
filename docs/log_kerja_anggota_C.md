@@ -118,6 +118,19 @@ Run stabilitas P1–P4 sudah dijalankan B pada 22 November 2026 dengan aktor 21�
 - Versi 1.0 hanya memindai `progres_anggota_b/src/` dan `notebooks/`, sehingga skrip baru B di `scripts/` dan `train_final_models.py` di root tidak ikut terperiksa. Pemindaian kini rekursif di `progres_anggota_b/` ditambah daftar `B_ROOT_FILES`.
 - Baris yang hanya membaca daftar nomor aktor test (`test_actors = sorted(... splits['test'])`, dipakai B untuk assert tidak tumpang tindih) sempat terbaca sebagai FAIL. Baris seperti itu kini dikecualikan, kecuali bila baris yang sama memfilter tabel data.
 
+### Audit ulang ketiga (24 November 2026, setelah `25f93ca` B dan merge PR #1 A): 11 OK, 1 WARN, 0 FAIL
+
+- **Model final:** kini 11 file di `models/` dan subfoldernya. Selain 4 model awal, ada ensemble SVM+RF × 90/52, SVM hill climbing (48 fitur), SVM random subset median (52), dan MLP × 90/SA-52/MI-52 dari A. Semua scaler melihat 1.200 sampel (aktor 1–20). Bundle MLP tidak mencatat `train_val_actors`, sehingga buktinya dari jumlah sampel scaler.
+- **Kode B:** 11 file diperiksa, termasuk `run_comparators_and_curves.py` di root. Tidak ada yang membaca data test.
+- **Mutual information:** PENDING → OK. `mutual_info_classif(X_tr, y_tr, …)` di notebook langkah 10; `X_tr` dari aktor 1–16 (960 × 90). File `mi_topk_peak.json` belum diunggah A; daftar 52 fitur tersedia di `mi_scores_peak.csv` (`in_top_k`).
+- **PR #1:** sebelum merge, branch `ito` menghapus `docs/log_kerja_anggota_A.md` dan mengganti nama `docs/dataset_card.md`. Konflik `requirements.txt` diselesaikan dengan versi main. C memulihkan log A (ditambah ringkasan langkah 10, 12, dan mini-eksperimen dari README A) dan nama dataset card di commit `f1d6fda`, lalu PR di-merge (`8e4f6fc`).
+
+### Perbaikan skrip audit (v1.2)
+
+- Model final dicari rekursif di `models/**/*.joblib`; kunci bundle yang tidak ada (`train_val_actors`, `n_features`) ditandai, bukan dianggap gagal.
+- `run_comparators_and_curves.py` ditambahkan ke `B_ROOT_FILES`.
+- Pemeriksaan MI otomatis: semua `.py`/`.ipynb` dipindai untuk `mutual_info_classif(`; OK hanya jika argumen pertamanya data train.
+
 ---
 
 ## Langkah 9 — Analisis stabilitas (sebagian)
@@ -288,6 +301,8 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | Keputusan sementara: paper dan judul gambar paper berbahasa Inggris (menunggu konfirmasi dosen); gambar stabilitas diubah ke bahasa Inggris |
 | 24 November 2026 | Pekerjaan C di-push (5 commit, `9cb6627`–`adc91ad`) |
 | 24 November 2026 | B push 3 skrip dan 4 model final (`1a1b51b`). Audit v1.1 diulang: 10 OK, 1 WARN, 1 PENDING, 0 FAIL. Demo v0.2: kurva SA interaktif dan model final 90 vs 52 fitur |
+| 24 November 2026 | B push pembanding HC, random subset, sweep λ, ensemble, dan log iterasi (`25f93ca`) langsung ke main |
+| 24 November 2026 | PR #1 A (branch `ito`): konflik `requirements.txt` diselesaikan; log A dan nama dataset card dipulihkan (`f1d6fda`); PR di-merge (`8e4f6fc`). Audit v1.2: 11 OK, 1 WARN, 0 FAIL |
 
 ---
 
@@ -304,7 +319,7 @@ Centang langsung di dokumen setelah selesai.
 - [ ] Langkah 5: proposal 1 halaman (konfirmasi)
 - [x] Langkah 6: audit anti-leakage dijalankan dan didokumentasikan
 - [x] Langkah 6: audit ulang setelah skrip dan model final B masuk
-- [ ] Langkah 6: audit ulang setelah MI dari A masuk
+- [x] Langkah 6: audit ulang setelah pembanding B dan MI/MLP dari A masuk (11 OK, 1 WARN, 0 FAIL)
 - [ ] Langkah 7: evaluasi test sekali, CI bootstrap, McNemar, `main_table.csv`
 - [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
@@ -334,5 +349,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Setelah daftar metode final disepakati (pembanding B) dan MI dari A tiba: jalankan audit ulang, lalu evaluasi test sekali (langkah 7), uji noise, error analysis, dan matriks transfer.
-4. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.
+3. Menunggu dari B: model final SVM MI-52 (dari `mi_scores_peak.csv`, `in_top_k`), keputusan jumlah seed HC/λ/SA (tambah run atau catat sebagai keterbatasan), dan lokasi akhir model. Menunggu dari A: `mi_topk_peak.json` dan kolom `in_sa_subset`.
+4. Setelah daftar metode final disepakati: jalankan audit sekali lagi, lalu evaluasi test sekali (langkah 7), uji noise, error analysis, dan matriks transfer.
+5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.

@@ -70,7 +70,7 @@ AI-Projek/
 ├── extract_features.py       membuat ulang tabel fitur dari audio (A)
 ├── config.json               parameter preprocessing dan fitur (A)
 ├── train_final_models.py     melatih model final di train + validation (B)
-├── models/                   4 model final SVM/RF × 90/52 fitur dan manifest (B)
+├── models/                   model final di train + validation: SVM/RF, ensemble, hill climbing, random subset (B); MLP (A)
 ├── requirements.txt          versi pustaka terkunci
 ├── data/                     metadata, fitur, split, partisi, test bernoise, korelasi (A)
 ├── src/
@@ -102,13 +102,15 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Bagian | Status |
 | --- | --- |
 | Data, fitur, split, partisi, test bernoise, korelasi (A) | Selesai |
-| Pembanding mutual information (A, langkah 10) | Menunggu |
+| Pembanding mutual information (A, langkah 10) | Selesai; `mi_topk_peak.json` belum diunggah |
+| Mini-eksperimen MLP, KMP, fuzzy (A) | Selesai |
 | Baseline, SA utama, 15 run stabilitas (B) | Selesai |
 | Skrip `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (B) | Selesai |
 | Model final SVM/RF × 90/52 fitur di train + validation (B) | Selesai |
-| Pembanding hill climbing, random subset, sweep λ, ensemble (B) | Menunggu |
-| `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai |
-| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Menunggu daftar metode final dan MI |
+| Pembanding hill climbing, random subset, sweep λ, ensemble (B) | Selesai (jumlah seed lebih sedikit dari rencana, dicatat sebagai keterbatasan atau ditambah) |
+| Model final SVM MI-52 (B) | Menunggu |
+| `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai; audit 11 OK, 1 WARN, 0 FAIL |
+| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Menunggu model SVM MI-52 dan daftar metode final |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama
