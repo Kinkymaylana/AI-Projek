@@ -1,3 +1,4 @@
 subset,k,val F1 (SVM tetap),val UAR (SVM tetap),CV F1 train (tuning),val F1 (tuning),parameter terbaik
 Semua 90 fitur,90,0.5144,0.5195,0.4901,0.5165,"C=1.0, gamma=0.005, kernel=rbf"
+SA (52 fitur),52,0.4995,0.5078,0.5224,0.4995,"C=1.0, gamma=scale, kernel=rbf"
 MI top-52,52,0.4658,0.4648,0.4818,0.4205,"C=0.01, kernel=linear"

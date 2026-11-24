@@ -11,12 +11,16 @@ Peringkat fitur energi: rms_mean #79, rms_std #68, rms_max #72
 
 Top-52 per kelompok: mfcc 17/26, delta_mfcc 10/26, prosodi 6/6, energi 0/3, zcr 0/2, spektral 6/8, contrast 6/7, chroma 7/12
 Top-52: 39 kelompok redundan, 13 fitur kembaran
+SA: mfcc 12/26, delta_mfcc 17/26, prosodi 3/6, energi 2/3, zcr 2/2, spektral 3/8, contrast 6/7, chroma 7/12
+SA: 44 kelompok redundan, 8 fitur kembaran
+MI vs SA: 29 fitur sama, Jaccard per fitur 0.387, per kelompok 0.456
 
 Pratinjau validation (protokol B; angka resmi dari B/C):
   Semua 90 fitur   k=90  val F1 SVM tetap 0.5144 | CV F1 tuning 0.4901 | val F1 tuning 0.5165 (C=1.0, gamma=0.005, kernel=rbf)
+  SA (52 fitur)    k=52  val F1 SVM tetap 0.4995 | CV F1 tuning 0.5224 | val F1 tuning 0.4995 (C=1.0, gamma=scale, kernel=rbf)
   MI top-52        k=52  val F1 SVM tetap 0.4658 | CV F1 tuning 0.4818 | val F1 tuning 0.4205 (C=0.01, kernel=linear)
 
-Verifikasi: 7/7 OK
+Verifikasi: 8/8 OK
   [OK] MI dihitung hanya di train (aktor 1-16, 960 baris) — (960, 90)
   [OK] Data test (aktor 21-24) tidak ada di data yang dipakai
   [OK] Skor MI lengkap untuk 90 fitur, tanpa NaN, tidak negatif
@@ -24,3 +28,4 @@ Verifikasi: 7/7 OK
   [OK] Top-52 stabil terhadap seed estimator (Jaccard min >= 0,9) — min 1.000
   [OK] File untuk B tersimpan dan isinya sama
   [OK] Format mengikuti kontrak subsets.json (run_id, method, seed, lambda, partition, indices)
+  [OK] Pratinjau mereproduksi val macro F1 SA milik B (selisih < 0,005) — notebook 0.4995 vs B 0.4995
