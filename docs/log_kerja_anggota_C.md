@@ -210,6 +210,18 @@ Uji berpasangan (selisih macro F1 A − B, paired bootstrap 1.000 ulangan; McNem
 
 ---
 
+## Langkah 10 — Uji noise (skrip disiapkan, belum dijalankan)
+
+`src/run_noise_evaluation.py` v1.0 dibuat pada 24 November 2026. Ke-12 model yang sama dengan evaluasi test bersih memprediksi 6 kondisi test bernoise dari Anggota A (white dan ESC-50, SNR 20 / 10 / 0 dB, versi peak). Tidak ada model yang dilatih, di-tuning, atau dipilih ulang.
+
+- **Mode check** (bawaan): hanya membaca kolom `file` dan `actor`. Memastikan 6 tabel ada, kolomnya sama dengan `features_peak.csv`, dan berisi 240 file yang sama dengan test bersih. Hasil di data asli: **SIAP**.
+- **Mode noise** (sekali): 72 baris di `main_table.csv` (split `test_noisy_<jenis>_<snr>db`), prediksi per file, penurunan dari test bersih, dan uji berpasangan per kondisi untuk SA vs 90 fitur (SVM, RF, MLP) serta SA vs MI. Ditolak jika test bersih belum selesai, sudah ada baris `test_noisy`, atau `NOISE_DONE.json` sudah ada.
+- `src/plot_test_figures.py` membuat `figures/test_eval/noise_macro_f1_svm_en.png` (macro F1 SVM 90 / SA52 / MI52 terhadap SNR) dari hasil tersimpan.
+- 3 tes baru (total 27) menjalankan mode noise penuh pada data tiruan dan memastikan run kedua ditolak. Tes ini juga menangkap dua titik yang bisa membuat run gagal di tengah jalan; keduanya sudah diperbaiki.
+- Hipotesis dari Anggota A (langkah 9): subset yang banyak memakai fitur spektral turun paling tajam, dan white noise lebih merusak daripada ESC-50.
+
+---
+
 ## Langkah 9 — Analisis stabilitas (sebagian)
 
 ### Yang dikerjakan
@@ -406,7 +418,8 @@ Centang langsung di dokumen setelah selesai.
 - [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
 - [ ] Langkah 9: matriks transfer 5 × 5 (setelah test)
-- [ ] Langkah 10: uji noise (test bersih, 20, 10, 0 dB)
+- [x] Langkah 10: skrip uji noise siap; mode check SIAP; 3 tes
+- [ ] Langkah 10: uji noise dijalankan sekali (white dan ESC-50, 20, 10, 0 dB)
 - [ ] Langkah 11: error analysis minimal 3 file
 - [x] Langkah 12: demo alpha 4 tab berjalan
 - [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA

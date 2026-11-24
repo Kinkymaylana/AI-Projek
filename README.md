@@ -54,10 +54,13 @@ Semua perintah dijalankan dari root repo.
 | Tujuan | Perintah | Hasil |
 | --- | --- | --- |
 | Demo Gradio | `.venv\Scripts\python.exe app.py` | buka http://127.0.0.1:7860 |
-| Tes unit | `.venv\Scripts\python.exe -m pytest tests` | 24 tes untuk `evaluate.py`, `stability.py`, dan `run_test_evaluation.py` |
+| Tes unit | `.venv\Scripts\python.exe -m pytest tests` | 27 tes untuk `evaluate.py`, `stability.py`, `run_test_evaluation.py`, dan `run_noise_evaluation.py` |
 | Analisis stabilitas | `.venv\Scripts\python.exe src\run_stability_analysis.py` | `results/stability_*`, `figures/stability/` |
 | Audit anti-leakage | `.venv\Scripts\python.exe src\audit_leakage.py` | `results/audit_leakage.json` |
 | Uji coba evaluasi test (validation saja, aman) | `.venv\Scripts\python.exe src\run_test_evaluation.py` | `results/test_eval/dryrun_validation.csv` dan status kesiapan |
+| Cek kesiapan uji noise (aman) | `.venv\Scripts\python.exe src\run_noise_evaluation.py` | status SIAP / BELUM SIAP |
+| Uji noise **sekali** (hanya C, setelah test bersih) | `.venv\Scripts\python.exe src\run_noise_evaluation.py --mode noise --confirm "EVALUASI NOISE SEKALI"` | `results/main_table.csv` (72 baris noise), `results/noise_eval/` |
+| Gambar paper dari hasil tersimpan | `.venv\Scripts\python.exe src\plot_test_figures.py` | `figures/test_eval/*_en.png` |
 | Evaluasi test **sekali** (hanya C) | `.venv\Scripts\python.exe src\run_test_evaluation.py --mode test --confirm "EVALUASI TEST SEKALI"` | `results/main_table.csv`, `results/test_eval/`, `figures/test_eval/` |
 | Membuat ulang fitur dari audio | `.venv\Scripts\python.exe extract_features.py --config config.json` | lihat `docs/README_extract_features.md` |
 | Melatih ulang model final | `.venv\Scripts\python.exe train_final_models.py` | `models/*.joblib`, lihat `docs/Panduan_Model_Final.md` |
@@ -82,6 +85,7 @@ AI-Projek/
 │   ├── run_stability_analysis.py   analisis stabilitas 15 run SA (C)
 │   ├── audit_leakage.py      audit anti-leakage (C)
 │   ├── run_test_evaluation.py   uji coba di validation, lalu evaluasi test sekali (C)
+│   ├── run_noise_evaluation.py  uji noise sekali pada 6 kondisi test bernoise (C)
 │   └── plot_test_figures.py  gambar paper dari hasil test tersimpan (C)
 ├── progres_anggota_b/        baseline, SA, model, inference (B; akan dipindah ke struktur utama)
 ├── tests/                    tes unit (C)
@@ -116,7 +120,8 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai; audit 11 OK, 1 WARN, 0 FAIL |
 | Skrip evaluasi test (C) | Siap; uji coba validation 12/12 model cocok dengan angka A/B |
 | Evaluasi test sekali (C) | Selesai 24 November 2026; `results/main_table.csv`, `results/test_eval/` |
-| Uji noise, error analysis, matriks transfer (C) | Berikutnya |
+| Uji noise (C) | Skrip siap; belum dijalankan |
+| Error analysis, matriks transfer (C) | Berikutnya |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama
