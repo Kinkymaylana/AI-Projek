@@ -1,5 +1,6 @@
 # Dataset Card — RAVDESS Speech (Proyek 07)
 
+Nov 20, 2026 · @L
 
 ## Ringkasan
 
@@ -124,7 +125,7 @@ Preprocessing sudah dijalankan pada 21 November 2026 (modul `src/preprocess.py`,
 1. Muat audio dan konversi ke mono (`mono=True`), termasuk 5 file stereo.
 2. Resample dari 48 kHz ke 16 kHz; rentang frekuensi suara bicara masih tercakup dan komputasi lebih ringan.
 3. Potong hening di awal dan akhir (`librosa.effects.trim`, `top_db=30`).
-4. Normalisasi amplitudo: **dibandingkan dalam dua versi.** EDA menunjukkan energi adalah petunjuk emosi yang kuat, sedangkan normalisasi puncak bisa menghapus sebagian informasi itu. Karena itu fitur diekstrak dalam dua versi, tanpa normalisasi (`features_none.csv`) dan dengan normalisasi puncak (`features_peak.csv`), lalu dibandingkan pada baseline berdasarkan macro F1 validation bersama Anggota B. Hasil preprocessing: normalisasi puncak menurunkan rentang energi antaremosi dari 19,3 menjadi 1,2 dB dan rentang antaraktor dari 18,5 menjadi 4,5 dB; yang terpengaruh hanya fitur berbasis level absolut (energi RMS dan MFCC ke-0).
+4. Normalisasi amplitudo: **dibandingkan dalam dua versi.** EDA menunjukkan energi adalah petunjuk emosi yang kuat, sedangkan normalisasi puncak bisa menghapus sebagian informasi itu. Karena itu fitur diekstrak dalam dua versi, tanpa normalisasi (`features_none.csv`) dan dengan normalisasi puncak (`features_peak.csv`), lalu dibandingkan pada baseline berdasarkan macro F1 validation bersama Anggota B. Hasil baseline Anggota B (22 November 2026): versi peak dipilih, karena SVM 90 fitur mencapai macro F1 validation 0,5165, dibanding 0,4846 tanpa normalisasi (RF: 0,4644 vs 0,4316). Semua tahap lanjutan (SA, mutual information, MLP) memakai features\_peak.csv; features\_none.csv tetap disimpan untuk fitur RMS dalam dB di indikator arousal fuzzy. Hasil preprocessing: normalisasi puncak menurunkan rentang energi antaremosi dari 19,3 menjadi 1,2 dB dan rentang antaraktor dari 18,5 menjadi 4,5 dB; yang terpengaruh hanya fitur berbasis level absolut (energi RMS dan MFCC ke-0).
 5. Standardisasi fitur (`StandardScaler`) **tidak** dilakukan di tahap ini, tetapi di dalam pipeline model dan di-fit hanya pada data train.
 
 Catatan hasil preprocessing:
@@ -240,6 +241,6 @@ Bagian ini membantu Anda memahami dan mempertanggungjawabkan dataset card. Hapus
 - [x] Hasil cek stereo (selisih maksimum dan korelasi kiri-kanan) di bagian Audit kualitas data
 - [x] Hasil preprocessing, fitur, split final, partisi, dan test bernoise (diperbarui 22 November 2026)
 - [ ] Konfirmasi keputusan preprocessing (poin 2a–2d) dari Anggota B
-- [ ] Versi normalisasi terpilih (none atau peak) dari hasil baseline Anggota B
+- [x] Versi normalisasi terpilih dari hasil baseline Anggota B: **peak** (SVM val macro F1 0,5165 vs 0,4846; dicatat 24 November 2026)
 - [ ] Bagikan dokumen ini ke Anggota B dan C
 - [ ] Hapus atau pindahkan bagian "Catatan untuk Anggota A" sebelum dikumpulkan
