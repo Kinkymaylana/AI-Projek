@@ -1,0 +1,39 @@
+{
+  "n_runs": 15,
+  "n_features": 90,
+  "partitions": [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "k_mean": 46.333333333333336,
+  "k_std": 5.789974915645968,
+  "k_min": 38,
+  "k_max": 58,
+  "nogueira_all": 0.1056698806712536,
+  "nogueira_within_partition_mean": 0.15268089633854195,
+  "nogueira_within_partition": {
+    "P0": 0.11505424954792032,
+    "P1": 0.12515788895601065,
+    "P2": 0.13269827204253426,
+    "P3": 0.2649999999999998,
+    "P4": 0.12549407114624478
+  },
+  "jaccard_feature_all": 0.3947345885365795,
+  "jaccard_feature_same_partition": 0.4200189212081475,
+  "jaccard_feature_diff_partition": 0.3905205330913181,
+  "jaccard_feature_random": 0.3436815644423923,
+  "jaccard_cluster_all": 0.48921621689050676,
+  "jaccard_cluster_same_partition": 0.5083920003913538,
+  "jaccard_cluster_diff_partition": 0.48602025297369883,
+  "jaccard_cluster_random": 0.4369556612611736,
+  "actor_overlap_train_jaccard": 0.4666666666666666,
+  "always_selected": [
+    "voiced_ratio"
+  ],
+  "never_selected": [],
+  "source": "progres_anggota_b/results/subsets.json",
+  "stability_version": "1.0"
+}
