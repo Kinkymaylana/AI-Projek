@@ -210,7 +210,7 @@ Uji berpasangan (selisih macro F1 A − B, paired bootstrap 1.000 ulangan; McNem
 
 ---
 
-## Langkah 10 — Uji noise (skrip disiapkan, belum dijalankan)
+## Langkah 10 — Uji noise
 
 `src/run_noise_evaluation.py` v1.0 dibuat pada 24 November 2026. Ke-12 model yang sama dengan evaluasi test bersih memprediksi 6 kondisi test bernoise dari Anggota A (white dan ESC-50, SNR 20 / 10 / 0 dB, versi peak). Tidak ada model yang dilatih, di-tuning, atau dipilih ulang.
 
@@ -219,6 +219,35 @@ Uji berpasangan (selisih macro F1 A − B, paired bootstrap 1.000 ulangan; McNem
 - `src/plot_test_figures.py` membuat `figures/test_eval/noise_macro_f1_svm_en.png` (macro F1 SVM 90 / SA52 / MI52 terhadap SNR) dari hasil tersimpan.
 - 3 tes baru (total 27) menjalankan mode noise penuh pada data tiruan dan memastikan run kedua ditolak. Tes ini juga menangkap dua titik yang bisa membuat run gagal di tengah jalan; keduanya sudah diperbaiki.
 - Hipotesis dari Anggota A (langkah 9): subset yang banyak memakai fitur spektral turun paling tajam, dan white noise lebih merusak daripada ESC-50.
+
+### Hasil uji noise (dijalankan sekali, 24 November 2026 20.45 WIB)
+
+72 baris `test_noisy_*` tercatat di `main_table.csv`; kunci `results/noise_eval/NOISE_DONE.json` aktif. Macro F1 (240 file per kondisi):
+
+| Metode | Bersih | White 20 | White 10 | White 0 | ESC-50 20 | ESC-50 10 | ESC-50 0 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| SVM_all90 | 0,469 | 0,029 | 0,029 | 0,029 | 0,441 | 0,310 | 0,146 |
+| SVM_SA52 | 0,469 | 0,029 | 0,029 | 0,029 | 0,442 | 0,311 | 0,150 |
+| SVM_MI52 | 0,422 | 0,106 | 0,088 | 0,068 | 0,390 | 0,306 | 0,176 |
+| SVM_HC48 | 0,473 | 0,037 | 0,029 | 0,029 | 0,402 | 0,313 | 0,077 |
+| SVM_Random52_median | 0,435 | 0,029 | 0,029 | 0,029 | 0,406 | 0,294 | 0,119 |
+| RF_all90 | 0,513 | 0,173 | 0,097 | 0,066 | 0,375 | 0,264 | 0,099 |
+| RF_SA52 | 0,503 | 0,189 | 0,107 | 0,066 | 0,368 | 0,282 | 0,131 |
+| Ensemble_SVM_RF_all90 | 0,497 | 0,029 | 0,029 | 0,029 | 0,433 | 0,311 | 0,132 |
+| Ensemble_SVM_RF_SA52 | 0,480 | 0,029 | 0,029 | 0,029 | 0,452 | 0,292 | 0,135 |
+| MLP_full90 | 0,483 | 0,050 | 0,029 | 0,029 | 0,429 | 0,345 | 0,204 |
+| MLP_SA52 | 0,554 | 0,122 | 0,050 | 0,029 | 0,440 | 0,303 | 0,239 |
+| MLP_MI52 | 0,502 | 0,121 | 0,029 | 0,029 | 0,425 | 0,286 | 0,185 |
+
+Gambar: `figures/test_eval/noise_macro_f1_svm_en.png`.
+
+### Interpretasi
+
+1. **White noise meruntuhkan semua model, bahkan pada 20 dB.** SVM RBF dan ensemble memprediksi *fearful* untuk ke-240 file di ketiga SNR (macro F1 0,029 = semua file ditebak satu kelas). Ini bukan bug: ringkasan distorsi Anggota A menunjukkan fitur spektral bergeser rata-rata 3,9 simpangan baku dan contrast 3,0 sudah pada white 20 dB (flatness_mean 31,7 pada 0 dB). Input sejauh itu dari data latih membuat kernel RBF hampir nol, sehingga keputusan jatuh ke satu kelas. RF turun lebih landai (0,17 pada 20 dB) karena pohon hanya "mentok" di ujung rentang fitur.
+2. **ESC-50 menurunkan performa secara bertahap**, sesuai urutan SNR: SVM 90 fitur 0,469 → 0,441 → 0,310 → 0,146. White noise jauh lebih merusak daripada ESC-50, sesuai hipotesis A.
+3. **Subset SA tidak lebih rapuh daripada 90 fitur.** Di keenam kondisi selisih SVM_SA52 − SVM_all90 paling besar 0,004 (CI selalu mencakup 0); RF dan ensemble juga serupa. Hipotesis A bahwa subset SA (banyak fitur spektral) turun paling tajam **tidak didukung**.
+4. **MI-52 tampak lebih tahan pada white noise (0,068–0,106 vs 0,029), tetapi ini kemungkinan efek kernel, bukan subset fitur.** SVM MI-52 hasil tuning B memakai kernel linear, sedangkan SVM 90 dan SA-52 memakai RBF. Model linear tidak runtuh ke satu kelas seperti RBF. Klaim "MI lebih robust" tidak boleh ditulis tanpa catatan ini.
+5. **Keterbatasan:** noise dicampur ke ucapan yang sudah di-trim di awal dan akhir (`src/preprocess.py`, top_db 30), dengan SNR dihitung terhadap daya ucapan itu (`src/noise.py`). Jeda di tengah ucapan tetap terisi noise penuh, dan frame seperti itu ikut menggeser rata-rata fitur spektral. Model tidak dilatih dengan augmentasi noise, jadi hasil ini mengukur robustness model yang dilatih pada data bersih. Banyak uji berpasangan (24) tanpa koreksi; perlakukan p di bawah 0,05 dengan hati-hati.
 
 ---
 
@@ -396,6 +425,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | B push SVM MI-52, jawaban 7 poin, grafik Inggris, bahan paper B (`f8f367d`). Audit: 12 model final, 11 OK, 1 WARN, 0 FAIL. Dryrun 12/12 cocok; mode test SIAP |
 | 24 November 2026 | PR #2 A (branch `ito`): `mi_topk_peak.json`, kolom `in_sa_subset` (top-52 sama dengan yang dipakai B), bahan paper A. Nama log A kembali diganti di branch; C memulihkan nama (`dbf43eb`), lalu PR di-merge (`1c5a521`). Audit 11 OK, 1 WARN, 0 FAIL; dryrun 12/12; 24 tes lolos |
 | 24 November 2026 | Grup mengonfirmasi 12 metode final. **Evaluasi test sekali** dijalankan Anggota C (20.11 WIB): SVM_SA52 0,469 vs SVM_all90 0,469 (selisih +0,001, CI [−0,045; +0,052]). Gambar confusion matrix bahasa Inggris dibuat dari hasil tersimpan |
+| 24 November 2026 | Skrip uji noise di-push (`324ff3f`). **Uji noise sekali** dijalankan Anggota C (20.45 WIB): white noise meruntuhkan SVM RBF ke satu kelas di semua SNR; ESC-50 turun bertahap; SA-52 tidak lebih rapuh daripada 90 fitur |
 
 ---
 
@@ -419,7 +449,7 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
 - [ ] Langkah 9: matriks transfer 5 × 5 (setelah test)
 - [x] Langkah 10: skrip uji noise siap; mode check SIAP; 3 tes
-- [ ] Langkah 10: uji noise dijalankan sekali (white dan ESC-50, 20, 10, 0 dB)
+- [x] Langkah 10: uji noise dijalankan sekali (24 November 2026 20.45); 72 baris; gambar bahasa Inggris
 - [ ] Langkah 11: error analysis minimal 3 file
 - [x] Langkah 12: demo alpha 4 tab berjalan
 - [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA
@@ -444,6 +474,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Evaluasi test bersih sudah selesai. Berikutnya: uji noise (12 tabel test bernoise, model yang sama), error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), matriks transfer 5 × 5, dan confusion matrix full vs selected untuk paper.
+3. Evaluasi test bersih dan uji noise sudah selesai. Berikutnya: error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), matriks transfer 5 × 5, trade-off λ, dan confusion matrix full vs selected untuk paper.
 4. Bagikan tabel hasil test ke grup; jangan ada model atau λ yang diubah setelah ini.
 5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.

@@ -1,0 +1,25 @@
+{
+  "evaluated_at": "2026-11-24T20:45:24",
+  "conditions": [
+    "test_noisy_white_20db",
+    "test_noisy_white_10db",
+    "test_noisy_white_0db",
+    "test_noisy_esc50_20db",
+    "test_noisy_esc50_10db",
+    "test_noisy_esc50_0db"
+  ],
+  "methods": [
+    "SVM_all90",
+    "SVM_SA52",
+    "SVM_MI52",
+    "SVM_HC48",
+    "SVM_Random52_median",
+    "RF_all90",
+    "RF_SA52",
+    "Ensemble_SVM_RF_all90",
+    "Ensemble_SVM_RF_SA52",
+    "MLP_full90",
+    "MLP_SA52",
+    "MLP_MI52"
+  ]
+}

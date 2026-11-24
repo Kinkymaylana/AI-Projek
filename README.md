@@ -120,7 +120,7 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai; audit 11 OK, 1 WARN, 0 FAIL |
 | Skrip evaluasi test (C) | Siap; uji coba validation 12/12 model cocok dengan angka A/B |
 | Evaluasi test sekali (C) | Selesai 24 November 2026; `results/main_table.csv`, `results/test_eval/` |
-| Uji noise (C) | Skrip siap; belum dijalankan |
+| Uji noise (C) | Selesai 24 November 2026; `results/noise_eval/` |
 | Error analysis, matriks transfer (C) | Berikutnya |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 

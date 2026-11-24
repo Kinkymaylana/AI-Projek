@@ -1,5 +1,5 @@
 {
-  "audited_at": "2026-11-24T20:15:49",
+  "audited_at": "2026-11-24T20:48:56",
   "results": [
     {
       "no": 1,
@@ -71,7 +71,7 @@
       "no": 6,
       "check": "Hasil test tercatat (hanya oleh C, sekali)",
       "status": "OK",
-      "detail": "12 baris test di main_table.csv"
+      "detail": "84 baris test di main_table.csv"
     }
   ]
 }

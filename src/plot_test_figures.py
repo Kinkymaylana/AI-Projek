@@ -35,9 +35,11 @@ CM_METHODS = {
 
 NOISE_SUMMARY = os.path.join(REPO_ROOT, 'results', 'noise_eval', 'noise_summary.json')
 # Warna mengikuti entitas, bukan peringkat; 90 fitur abu-abu sebagai rujukan.
-NOISE_LINES = [('SVM_all90', 'All 90 features', '#6b6b6b', 'o'),
-               ('SVM_SA52', 'SA subset (52)', '#2a78d6', 's'),
-               ('SVM_MI52', 'MI top-52', '#d9822b', '^')]
+# (metode, label, warna, marker, gaya garis, tebal). Garis 90 fitur tebal dan putus-putus
+# di belakang, supaya tetap terlihat saat nilainya sama dengan subset SA.
+NOISE_LINES = [('SVM_all90', 'All 90 features', '#9a9a9a', 'o', '--', 5),
+               ('SVM_SA52', 'SA subset (52)', '#2a78d6', 's', '-', 2),
+               ('SVM_MI52', 'MI top-52', '#d9822b', '^', '-', 2)]
 
 
 def plot_noise(clean, noise):
@@ -45,10 +47,11 @@ def plot_noise(clean, noise):
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.6), sharey=True)
     x_labels = ['Clean', '20 dB', '10 dB', '0 dB']
     for ax, (kind, title) in zip(axes, [('white', 'White noise'), ('esc50', 'ESC-50 environmental noise')]):
-        for method, label, color, marker in NOISE_LINES:
+        for method, label, color, marker, style, lw in NOISE_LINES:
             ys = [clean[method]['macro_f1']] + [noise['results'][f'test_noisy_{kind}_{snr}db'][method]['macro_f1']
                                                 for snr in (20, 10, 0)]
-            ax.plot(range(4), ys, color=color, marker=marker, lw=2, ms=7, label=label)
+            ax.plot(range(4), ys, color=color, marker=marker, ls=style, lw=lw, ms=9 if lw > 2 else 7,
+                    label=label)
         ax.set_xticks(range(4))
         ax.set_xticklabels(x_labels)
         ax.set_title(title, fontsize=11)
@@ -59,6 +62,9 @@ def plot_noise(clean, noise):
     axes[0].set_ylabel('Macro F1 (test, n=240)')
     axes[0].set_ylim(0, max(0.6, axes[0].get_ylim()[1]))
     axes[1].legend(frameon=False, loc='lower left', fontsize=9)
+    fig.text(0.5, -0.04, 'All-90 and SA lines overlap where their scores are equal. '
+             'Macro F1 0.029 = every file predicted as one class.',
+             ha='center', fontsize=8.5, color='#555555')
     fig.tight_layout()
     path = os.path.join(FIG_DIR, 'noise_macro_f1_svm_en.png')
     fig.savefig(path, dpi=200, bbox_inches='tight')
