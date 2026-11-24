@@ -112,6 +112,7 @@ def train_and_save_model(
     }
 
     out_path = os.path.join(out_dir, filename)
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
     joblib.dump(artifact, out_path)
 
     size_kb = round(os.path.getsize(out_path) / 1024.0, 1)
@@ -199,7 +200,7 @@ def main():
     specs = [
         (
             'SVM_all90',
-            'svm_all90_final.joblib',
+            'baseline/svm_all90_final.joblib',
             _build_svm_pipeline(svm_all90_params, probability=True),
             all90_indices,
             feat_names,
@@ -207,7 +208,7 @@ def main():
         ),
         (
             'SVM_SA52',
-            'svm_sa52_final.joblib',
+            'sa/svm_sa52_final.joblib',
             _build_svm_pipeline(svm_sa52_params, probability=True),
             sa_indices,
             sa_names,
@@ -215,7 +216,7 @@ def main():
         ),
         (
             'RF_all90',
-            'rf_all90_final.joblib',
+            'baseline/rf_all90_final.joblib',
             _build_rf_pipeline(rf_params),
             all90_indices,
             feat_names,
@@ -223,7 +224,7 @@ def main():
         ),
         (
             'RF_SA52',
-            'rf_sa52_final.joblib',
+            'sa/rf_sa52_final.joblib',
             _build_rf_pipeline(rf_params),
             sa_indices,
             sa_names,

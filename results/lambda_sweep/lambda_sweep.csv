@@ -1,0 +1,7 @@
+lambda,k,reduction_pct,best_cv_f1,best_obj,val_macro_f1,val_uar,val_accuracy,log_file,elapsed_s
+0.0,48,46.67,0.5243,0.524302,0.494,0.5039,0.5042,logs/lambda_sweep/sa_lambda_0p0.csv,79.85
+0.005,52,42.22,0.5224,0.519508,0.4995,0.5078,0.5125,logs/lambda_sweep/sa_lambda_0p005.csv,82.65
+0.015,52,42.22,0.5224,0.51373,0.4995,0.5078,0.5125,logs/lambda_sweep/sa_lambda_0p015.csv,82.1
+0.03,48,46.67,0.516,0.499966,0.486,0.5039,0.5,logs/lambda_sweep/sa_lambda_0p03.csv,86.58
+0.05,51,43.33,0.512,0.483707,0.4892,0.4922,0.4917,logs/lambda_sweep/sa_lambda_0p05.csv,81.85
+0.08,36,60.0,0.5082,0.476189,0.4493,0.4531,0.4542,logs/lambda_sweep/sa_lambda_0p08.csv,74.4
