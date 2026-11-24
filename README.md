@@ -105,7 +105,7 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Bagian | Status |
 | --- | --- |
 | Data, fitur, split, partisi, test bernoise, korelasi (A) | Selesai |
-| Pembanding mutual information (A, langkah 10) | Selesai; `mi_topk_peak.json` belum diunggah |
+| Pembanding mutual information (A, langkah 10) | Selesai |
 | Mini-eksperimen MLP, KMP, fuzzy (A) | Selesai |
 | Baseline, SA utama, 15 run stabilitas (B) | Selesai |
 | Skrip `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (B) | Selesai |

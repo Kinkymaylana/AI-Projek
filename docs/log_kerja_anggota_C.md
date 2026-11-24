@@ -339,6 +339,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | PR #1 A (branch `ito`): konflik `requirements.txt` diselesaikan; log A dan nama dataset card dipulihkan (`f1d6fda`); PR di-merge (`8e4f6fc`). Audit v1.2: 11 OK, 1 WARN, 0 FAIL |
 | 24 November 2026 | `src/run_test_evaluation.py` v1.0: dryrun validation 11/11 model cocok dengan angka A/B; 24 tes lolos; mode test menunggu SVM MI-52 |
 | 24 November 2026 | B push SVM MI-52, jawaban 7 poin, grafik Inggris, bahan paper B (`f8f367d`). Audit: 12 model final, 11 OK, 1 WARN, 0 FAIL. Dryrun 12/12 cocok; mode test SIAP |
+| 24 November 2026 | PR #2 A (branch `ito`): `mi_topk_peak.json`, kolom `in_sa_subset` (top-52 sama dengan yang dipakai B), bahan paper A. Nama log A kembali diganti di branch; C memulihkan nama (`dbf43eb`), lalu PR di-merge (`1c5a521`). Audit 11 OK, 1 WARN, 0 FAIL; dryrun 12/12; 24 tes lolos |
 
 ---
 
@@ -386,6 +387,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Menunggu dari B: model final SVM MI-52 (dari `mi_scores_peak.csv`, `in_top_k`), keputusan jumlah seed HC/λ/SA (tambah run atau catat sebagai keterbatasan), dan lokasi akhir model. Menunggu dari A: `mi_topk_peak.json` dan kolom `in_sa_subset`.
-4. Setelah daftar metode final disepakati: jalankan audit sekali lagi, lalu evaluasi test sekali (langkah 7), uji noise, error analysis, dan matriks transfer.
+3. Semua masukan A dan B untuk evaluasi test sudah lengkap (12 model, audit 0 FAIL, dryrun 12/12). Konfirmasi ke grup bahwa daftar 12 metode di `docs/jawaban_anggota_B_ke_C.md` final.
+4. Setelah grup setuju: jalankan evaluasi test sekali (`run_test_evaluation.py --mode test`), lalu uji noise, error analysis, dan matriks transfer.
 5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.

@@ -1,5 +1,5 @@
 {
-  "audited_at": "2026-11-24T19:40:28",
+  "audited_at": "2026-11-24T19:58:14",
   "results": [
     {
       "no": 1,
@@ -65,7 +65,7 @@
       "no": 5,
       "check": "Mutual information dihitung di train saja",
       "status": "OK",
-      "detail": "mutual_info_classif dipanggil dengan data train di notebooks/Langkah10_AnggotaA_Mutual_Information.ipynb:105; catatan: data/analysis/mi_topk_peak.json (daftar indeks untuk B) belum ada di repo"
+      "detail": "mutual_info_classif dipanggil dengan data train di notebooks/Langkah10_AnggotaA_Mutual_Information.ipynb:112; daftar top-k ada di data/analysis/mi_topk_peak.json"
     },
     {
       "no": 6,
