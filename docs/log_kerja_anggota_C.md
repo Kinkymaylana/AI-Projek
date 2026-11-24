@@ -10,7 +10,9 @@ Temuan utama:
 - **Noise:** subset SA tidak lebih rapuh daripada 90 fitur. White noise meruntuhkan SVM RBF ke satu kelas bahkan pada 20 dB; ESC-50 menurunkan performa bertahap.
 - **Stabilitas:** subset SA hanya sedikit lebih stabil daripada subset acak (Nogueira 0,106), tetapi subset dari partisi mana pun berpindah ke partisi lain sama baiknya (matriks transfer: diagonal 0,473, luar diagonal 0,484, semua 90 fitur 0,489).
 
-Sisa pekerjaan: error analysis (butuh audio aktor 21–24), uji demo dengan mikrofon, serta integrasi paper dan slide.
+- **Error analysis:** sad paling sulit (salah di 17/32 file oleh semua model) dan paling bergantung pada speaker; suara desah atau serak membuat fitur prosodi tidak andal. SVM 90 dan SA52 salah pada file yang sama dengan tebakan yang sama.
+
+Sisa pekerjaan: catatan dengar error analysis, uji demo dengan mikrofon, serta integrasi paper dan slide.
 
 | Langkah (Rencana Kerja) | Status | Hasil utama |
 | --- | --- | --- |
@@ -24,7 +26,7 @@ Sisa pekerjaan: error analysis (butuh audio aktor 21–24), uji demo dengan mikr
 | 8. Gambar hasil | Selesai | Confusion matrix, noise, trade-off λ, transfer (bahasa Inggris) |
 | 9. Analisis stabilitas | Selesai | Heatmap, Jaccard, Nogueira, kelompok redundan, matriks transfer 5 × 5 |
 | 10. Uji noise | Selesai | 6 kondisi × 12 metode; `results/noise_eval/` |
-| 11. Error analysis | Belum | Prioritas kelas sad; perlu audio aktor 21–24 |
+| 11. Error analysis | Selesai (catatan dengar diisi C) | 4 file contoh, pola per emosi/intensitas/aktor; sad paling sulit |
 | 12. Demo Gradio | Alpha berjalan | 4 tab di `app.py` v0.2: kurva SA interaktif dari history, probabilitas model final 90 vs 52 fitur berdampingan |
 | 13. Integrasi paper dan slide | Belum | — |
 
@@ -255,6 +257,38 @@ Gambar: `figures/test_eval/noise_macro_f1_svm_en.png`.
 
 ---
 
+## Langkah 11 — Error analysis
+
+`src/error_analysis.py` v1.0 (24 November 2026) hanya membaca prediksi test yang sudah tersimpan (`results/test_eval/test_predictions.csv`); tidak ada model yang dievaluasi ulang di test. Audio aktor 21–24 dibaca dari salinan lokal RAVDESS (tidak disimpan di repo). Hasil: `results/error_analysis/error_summary.json`, `error_cases.csv`, `figures/error_analysis/case_*.png`.
+
+### Pola kesalahan (240 file test, 12 model)
+
+- 46 file salah di **semua** 12 model, 40 file benar di semua model. SVM 90 dan SA52 salah bersama di 105 file, dan 87 di antaranya dengan label tebakan yang sama: kedua subset gagal pada file yang sama dengan cara yang sama.
+- Rata-rata jumlah model yang salah per emosi: surprised 3,6 · angry 4,2 · neutral 4,3 · disgust 5,5 · calm 5,5 · fearful 6,7 · happy 7,1 · **sad 10,7**.
+- **Sad** ditebak disgust (13), neutral (9), happy (4), calm (4) oleh SVM 90; 17 dari 32 file sad salah di semua model. **Disgust** paling sering ditebak angry (13 dari 32 pada SVM SA52).
+- Akurasi SVM SA52: intensitas normal 0,43 vs strong 0,55; per aktor 0,42 (aktor 22) sampai 0,55 (aktor 24); laki-laki dan perempuan sama (0,48).
+
+### Empat file contoh
+
+Dipilih dengan aturan dari prediksi tersimpan: mewakili confusion terbesar, dan semuanya salah di 12/12 model. Setiap gambar membandingkan file dengan file aktor dan kalimat yang sama dalam emosi tebakan. "Fitur penarik" = fitur (skala model SA52) yang membuat file lebih dekat ke pusat kelas tebakan daripada kelas aslinya; pusat dihitung di train + validation.
+
+| No | File | Asli → tebakan | Yang terlihat | Fitur penarik utama | Catatan dengar (diisi C) |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `Actor_23/03-01-04-01-02-02-23.wav` (L, normal) | sad → disgust | Segmen tak bersuara panjang berenergi tinggi di frekuensi atas (0,55–0,9 s), seperti desah atau frikatif panjang; F0 datar rendah (128 Hz), mirip file disgust aktor yang sama (135 Hz) | zcr_mean (z +1,86), zcr_std (+2,05), rolloff_std (+1,28) | … |
+| 2 | `Actor_22/03-01-04-01-01-01-22.wav` (P, normal) | sad → neutral | Kontur F0 hampir identik dengan neutral aktor yang sama (median 182 Hz vs 182 Hz, sama-sama menurun); spektrogram serupa. Aktor ini membawakan sad normal hampir seperti neutral | voiced_ratio (+0,99), dmfcc03_std (+1,11), contrast2_mean (+1,96) | … |
+| 3 | `Actor_21/03-01-04-02-01-01-21.wav` (L, strong) | sad → happy | Hanya 26% frame bersuara (pyin gagal melacak nada), F0 lebih tinggi daripada happy aktor yang sama (148 vs 108 Hz); kemungkinan suara bergetar atau seperti menangis | rolloff_std (−1,35), flatness_mean (−0,58), dmfcc10_std (+0,81) | … |
+| 4 | `Actor_21/03-01-07-01-01-02-21.wav` (L, normal) | disgust → angry | Nada sangat rendah dan datar (85 Hz) dengan hanya 25% frame bersuara, kemungkinan suara serak (*creaky voice*); file angry aktor yang sama 151 Hz | rolloff_std (−1,31), contrast7_mean (+1,21), dmfcc05_std (+1,05) | … |
+
+### Interpretasi
+
+1. **Sad adalah emosi berarousal rendah yang paling bergantung pada speaker.** Aktor 22 membawakan sad normal hampir sama dengan neutral (kasus 2); kontur F0 keduanya praktis identik. Fitur statistik per file tidak dapat memisahkan keduanya tanpa rujukan suara normal speaker itu.
+2. **Kualitas suara (desah, serak, suara bergetar) membuat fitur prosodi tidak andal.** Pada kasus 3 dan 4 hanya sekitar 25% frame terdeteksi bersuara, sehingga statistik F0 dihitung dari sedikit frame dan fitur spektral (ZCR, rolloff, flatness) yang mendominasi keputusan. Fitur kualitas suara seperti jitter, shimmer, atau HNR tidak ada di 90 fitur kita.
+3. **Kesalahan bukan akibat seleksi fitur.** SVM 90 dan SA52 membuat tebakan salah yang sama pada keempat file, dan 87 dari 105 file yang sama-sama salah. Ini sejalan dengan hasil utama: subset SA tidak kehilangan informasi yang dipakai model 90 fitur.
+4. Pada kasus 3 dan 4, pusat kelas terdekat justru kelas aslinya, tetapi jaraknya ke semua pusat hampir sama besar (sekitar 7–8 satuan z). File seperti ini jauh dari semua kelas; batas keputusan SVM yang nonlinier lalu jatuh ke kelas lain.
+5. **Usulan untuk paper (Future Work):** normalisasi fitur per speaker, serta fitur kualitas suara (jitter, shimmer, HNR).
+
+---
+
 ## Langkah 9 — Analisis stabilitas (sebagian)
 
 ### Yang dikerjakan
@@ -451,6 +485,7 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | Grup mengonfirmasi 12 metode final. **Evaluasi test sekali** dijalankan Anggota C (20.11 WIB): SVM_SA52 0,469 vs SVM_all90 0,469 (selisih +0,001, CI [−0,045; +0,052]). Gambar confusion matrix bahasa Inggris dibuat dari hasil tersimpan |
 | 24 November 2026 | Skrip uji noise di-push (`324ff3f`). **Uji noise sekali** dijalankan Anggota C (20.45 WIB): white noise meruntuhkan SVM RBF ke satu kelas di semua SNR; ESC-50 turun bertahap; SA-52 tidak lebih rapuh daripada 90 fitur |
 | 24 November 2026 | Matriks transfer 5 × 5 (+ baris 90 fitur): diagonal 0,473, luar diagonal 0,484, 90 fitur 0,489. Gambar trade-off λ dua panel untuk paper |
+| 24 November 2026 | Error analysis dari prediksi tersimpan dan audio lokal aktor 21–24: pola kesalahan dan 4 file contoh (sad → disgust/neutral/happy, disgust → angry) |
 
 ---
 
@@ -475,7 +510,8 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 9: matriks transfer 5 × 5 + baris 90 fitur (diagonal 0,473, luar diagonal 0,484)
 - [x] Langkah 10: skrip uji noise siap; mode check SIAP; 3 tes
 - [x] Langkah 10: uji noise dijalankan sekali (24 November 2026 20.45); 72 baris; gambar bahasa Inggris
-- [ ] Langkah 11: error analysis minimal 3 file
+- [x] Langkah 11: error analysis 4 file (spektrogram, F0, fitur penarik) dan pola kesalahan
+- [ ] Langkah 11: catatan dengar keempat file diisi
 - [x] Langkah 12: demo alpha 4 tab berjalan
 - [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA
 - [ ] Langkah 12: uji mikrofon dan file RAVDESS aktor 1–20; jalan di Colab/Spaces
@@ -499,6 +535,6 @@ Centang langsung di dokumen setelah selesai.
 
 1. Kirim ketiga pesan di atas dan catat tanggalnya.
 2. Uji tab Coba sendiri dengan mikrofon.
-3. Evaluasi test bersih, uji noise, matriks transfer, dan gambar paper sudah selesai. Berikutnya: error analysis minimal 3 file (prioritas kelas sad; perlu audio aktor 21–24), lalu paper IEEE dan slide.
+3. Evaluasi test bersih, uji noise, matriks transfer, gambar paper, dan error analysis sudah selesai. Berikutnya: dengarkan keempat file contoh dan isi kolom catatan dengar, lalu paper IEEE dan slide.
 4. Bagikan tabel hasil test ke grup; jangan ada model atau λ yang diubah setelah ini.
 5. Mulai kerangka paper IEEE: Introduction dan Failure Analysis bisa ditulis sekarang dari hasil stabilitas.
