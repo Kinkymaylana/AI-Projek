@@ -133,6 +133,40 @@ Run stabilitas P1–P4 sudah dijalankan B pada 22 November 2026 dengan aktor 21�
 
 ---
 
+## Langkah 7 — Skrip evaluasi test (disiapkan, test belum dibuka)
+
+### Yang dikerjakan
+
+`src/run_test_evaluation.py` v1.0 dibuat pada 24 November 2026 dengan dua mode:
+
+- **dryrun** (bawaan): baris aktor 21–24 dibuang tepat setelah `features_peak.csv` dibaca. Setiap model final di-clone, di-fit ulang di train, lalu dinilai di validation dan dicocokkan dengan angka pemilik model. Hasilnya di `results/test_eval/dryrun_validation.{csv,json}`.
+- **test** (sekali): model final memprediksi test dengan `predict()`. Hasilnya satu baris per metode di `main_table.csv` dengan CI bootstrap 95%, prediksi per file, F1 per emosi, paired bootstrap dan McNemar untuk 7 pasangan (SA vs semua fitur, MI, HC, random; RF; ensemble; MLP), serta confusion matrix SVM 90 / SA52 / MI52.
+- **Pengaman mode test:** frasa konfirmasi, semua model wajib ada, dryrun bersih, audit 0 FAIL, belum ada baris test di `main_table.csv`, dan file kunci `TEST_DONE.json` yang menolak run kedua.
+
+### Hasil dryrun (validation, test tidak dibaca)
+
+| Metode | k | Val macro F1 | Rujukan | Status |
+| --- | --- | --- | --- | --- |
+| SVM_all90 | 90 | 0,5165 | 0,5165 (B) | OK |
+| SVM_SA52 | 52 | 0,4995 | 0,4995 (B) | OK |
+| SVM_MI52 | 52 | 0,4257 | 0,4257 (B, di-tuning: linear, C = 0,05) | OK |
+| SVM_HC48 | 48 | 0,5025 | 0,5025 (B) | OK |
+| SVM_Random52_median | 52 | 0,4404 | 0,4404 (B) | OK |
+| RF_all90 / RF_SA52 | 90 / 52 | 0,4644 / 0,4522 | sama (B) | OK |
+| Ensemble_SVM_RF_all90 / Ensemble_SVM_RF_SA52 | 90 / 52 | 0,5239 / 0,5055 | sama (B) | OK |
+| MLP_full90 / SA52 / MI52 | 90 / 52 / 52 | 0,4933 / 0,4473 / 0,4127 | seed 0 di `mlp_results.json` (A) | OK |
+
+Setelah B mengunggah SVM MI-52 (`f8f367d`), ke-12 model mereproduksi angka validation pemiliknya dengan selisih 0,0000, dan status mode test **SIAP**. Nama metode mengikuti daftar resmi di `docs/jawaban_anggota_B_ke_C.md`. Artinya, subset fitur, urutan kolom, dan pemetaan label (termasuk kode 0–7 pada MLP A) sudah benar. Tes unit baru (7 tes, total 24) menjalankan mode test penuh pada data tiruan dan memastikan run kedua ditolak.
+
+### Catatan
+
+- Rujukan MLP adalah skor seed 0, karena model final A dilatih dengan seed 0. Angka 5 seed (0,4769 / 0,4771 / 0,4523) tetap yang dilaporkan di paper untuk validation.
+- B men-tuning ulang SVM MI-52 di train (linear, C = 0,05; val 0,4257), lebih rendah dari pratinjau A dengan SVM tetap (0,4658). Pemilihan hyperparameter mengikuti CV train, jadi angka 0,4257 yang dipakai; perbedaannya dicatat di paper.
+- Jawaban B (`docs/jawaban_anggota_B_ke_C.md`): seed tidak ditambah (dicatat di Limitations), λ final 0,015, model tetap di `models/` root, RF-52 sengaja tidak di-tuning ulang, SD memakai `ddof=1`.
+- Label sumbu `plot_confusion` masih berbahasa Indonesia; sesuaikan ke bahasa Inggris sebelum gambar dipakai di paper.
+
+---
+
 ## Langkah 9 — Analisis stabilitas (sebagian)
 
 ### Yang dikerjakan
@@ -303,6 +337,8 @@ Semua angka dibaca dari file hasil, tidak diketik manual, dan aplikasi tidak men
 | 24 November 2026 | B push 3 skrip dan 4 model final (`1a1b51b`). Audit v1.1 diulang: 10 OK, 1 WARN, 1 PENDING, 0 FAIL. Demo v0.2: kurva SA interaktif dan model final 90 vs 52 fitur |
 | 24 November 2026 | B push pembanding HC, random subset, sweep λ, ensemble, dan log iterasi (`25f93ca`) langsung ke main |
 | 24 November 2026 | PR #1 A (branch `ito`): konflik `requirements.txt` diselesaikan; log A dan nama dataset card dipulihkan (`f1d6fda`); PR di-merge (`8e4f6fc`). Audit v1.2: 11 OK, 1 WARN, 0 FAIL |
+| 24 November 2026 | `src/run_test_evaluation.py` v1.0: dryrun validation 11/11 model cocok dengan angka A/B; 24 tes lolos; mode test menunggu SVM MI-52 |
+| 24 November 2026 | B push SVM MI-52, jawaban 7 poin, grafik Inggris, bahan paper B (`f8f367d`). Audit: 12 model final, 11 OK, 1 WARN, 0 FAIL. Dryrun 12/12 cocok; mode test SIAP |
 
 ---
 
@@ -320,7 +356,8 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 6: audit anti-leakage dijalankan dan didokumentasikan
 - [x] Langkah 6: audit ulang setelah skrip dan model final B masuk
 - [x] Langkah 6: audit ulang setelah pembanding B dan MI/MLP dari A masuk (11 OK, 1 WARN, 0 FAIL)
-- [ ] Langkah 7: evaluasi test sekali, CI bootstrap, McNemar, `main_table.csv`
+- [x] Langkah 7: skrip `run_test_evaluation.py` siap; dryrun validation 11/11 model cocok; 7 tes
+- [ ] Langkah 7: evaluasi test sekali, CI bootstrap, McNemar, `main_table.csv` (skrip SIAP; 12/12 model cocok)
 - [ ] Langkah 8: trade-off λ dan confusion matrix full vs selected
 - [x] Langkah 9: heatmap, Jaccard, Nogueira, kelompok redundan
 - [ ] Langkah 9: matriks transfer 5 × 5 (setelah test)

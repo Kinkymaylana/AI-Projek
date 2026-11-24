@@ -54,9 +54,11 @@ Semua perintah dijalankan dari root repo.
 | Tujuan | Perintah | Hasil |
 | --- | --- | --- |
 | Demo Gradio | `.venv\Scripts\python.exe app.py` | buka http://127.0.0.1:7860 |
-| Tes unit | `.venv\Scripts\python.exe -m pytest tests` | 17 tes untuk `evaluate.py` dan `stability.py` |
+| Tes unit | `.venv\Scripts\python.exe -m pytest tests` | 24 tes untuk `evaluate.py`, `stability.py`, dan `run_test_evaluation.py` |
 | Analisis stabilitas | `.venv\Scripts\python.exe src\run_stability_analysis.py` | `results/stability_*`, `figures/stability/` |
 | Audit anti-leakage | `.venv\Scripts\python.exe src\audit_leakage.py` | `results/audit_leakage.json` |
+| Uji coba evaluasi test (validation saja, aman) | `.venv\Scripts\python.exe src\run_test_evaluation.py` | `results/test_eval/dryrun_validation.csv` dan status kesiapan |
+| Evaluasi test **sekali** (hanya C) | `.venv\Scripts\python.exe src\run_test_evaluation.py --mode test --confirm "EVALUASI TEST SEKALI"` | `results/main_table.csv`, `results/test_eval/`, `figures/test_eval/` |
 | Membuat ulang fitur dari audio | `.venv\Scripts\python.exe extract_features.py --config config.json` | lihat `docs/README_extract_features.md` |
 | Melatih ulang model final | `.venv\Scripts\python.exe train_final_models.py` | `models/*.joblib`, lihat `docs/Panduan_Model_Final.md` |
 
@@ -78,7 +80,8 @@ AI-Projek/
 │   ├── evaluate.py           modul evaluasi bersama: semua angka paper lewat sini (C)
 │   ├── stability.py          indeks Nogueira dan pembanding acak (C)
 │   ├── run_stability_analysis.py   analisis stabilitas 15 run SA (C)
-│   └── audit_leakage.py      audit anti-leakage (C)
+│   ├── audit_leakage.py      audit anti-leakage (C)
+│   └── run_test_evaluation.py   uji coba di validation, lalu evaluasi test sekali (C)
 ├── progres_anggota_b/        baseline, SA, model, inference (B; akan dipindah ke struktur utama)
 ├── tests/                    tes unit (C)
 ├── results/                  main_table.csv, ringkasan stabilitas, hasil audit
@@ -108,9 +111,10 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Skrip `run_baseline.py`, `run_sa_main.py`, `run_sa_stability.py` (B) | Selesai |
 | Model final SVM/RF × 90/52 fitur di train + validation (B) | Selesai |
 | Pembanding hill climbing, random subset, sweep λ, ensemble (B) | Selesai (jumlah seed lebih sedikit dari rencana, dicatat sebagai keterbatasan atau ditambah) |
-| Model final SVM MI-52 (B) | Menunggu |
+| Model final SVM MI-52 (B) | Selesai |
 | `evaluate.py`, audit anti-leakage, analisis stabilitas tanpa label, demo (C) | Selesai; audit 11 OK, 1 WARN, 0 FAIL |
-| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Menunggu model SVM MI-52 dan daftar metode final |
+| Skrip evaluasi test (C) | Siap; uji coba validation 12/12 model cocok dengan angka A/B |
+| Evaluasi test sekali, uji noise, error analysis, matriks transfer (C) | Belum dijalankan; menunggu keputusan tim |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama
