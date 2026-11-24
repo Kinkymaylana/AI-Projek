@@ -12,7 +12,7 @@ Temuan utama:
 
 - **Error analysis:** sad paling sulit (salah di 17/32 file oleh semua model) dan paling bergantung pada speaker; suara desah atau serak membuat fitur prosodi tidak andal. SVM 90 dan SA52 salah pada file yang sama dengan tebakan yang sama.
 
-Sisa pekerjaan: catatan dengar error analysis, uji demo dengan mikrofon, serta integrasi paper dan slide.
+Sisa pekerjaan: uji demo dengan mikrofon, serta integrasi paper dan slide.
 
 | Langkah (Rencana Kerja) | Status | Hasil utama |
 | --- | --- | --- |
@@ -274,10 +274,10 @@ Dipilih dengan aturan dari prediksi tersimpan: mewakili confusion terbesar, dan 
 
 | No | File | Asli → tebakan | Yang terlihat | Fitur penarik utama | Catatan dengar (diisi C) |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `Actor_23/03-01-04-01-02-02-23.wav` (L, normal) | sad → disgust | Segmen tak bersuara panjang berenergi tinggi di frekuensi atas (0,55–0,9 s), seperti desah atau frikatif panjang; F0 datar rendah (128 Hz), mirip file disgust aktor yang sama (135 Hz) | zcr_mean (z +1,86), zcr_std (+2,05), rolloff_std (+1,28) | … |
-| 2 | `Actor_22/03-01-04-01-01-01-22.wav` (P, normal) | sad → neutral | Kontur F0 hampir identik dengan neutral aktor yang sama (median 182 Hz vs 182 Hz, sama-sama menurun); spektrogram serupa. Aktor ini membawakan sad normal hampir seperti neutral | voiced_ratio (+0,99), dmfcc03_std (+1,11), contrast2_mean (+1,96) | … |
-| 3 | `Actor_21/03-01-04-02-01-01-21.wav` (L, strong) | sad → happy | Hanya 26% frame bersuara (pyin gagal melacak nada), F0 lebih tinggi daripada happy aktor yang sama (148 vs 108 Hz); kemungkinan suara bergetar atau seperti menangis | rolloff_std (−1,35), flatness_mean (−0,58), dmfcc10_std (+0,81) | … |
-| 4 | `Actor_21/03-01-07-01-01-02-21.wav` (L, normal) | disgust → angry | Nada sangat rendah dan datar (85 Hz) dengan hanya 25% frame bersuara, kemungkinan suara serak (*creaky voice*); file angry aktor yang sama 151 Hz | rolloff_std (−1,31), contrast7_mean (+1,21), dmfcc05_std (+1,05) | … |
+| 1 | `Actor_23/03-01-04-01-02-02-23.wav` (L, normal) | sad → disgust | Segmen tak bersuara panjang berenergi tinggi di frekuensi atas (0,55–0,9 s), seperti desah atau frikatif panjang; F0 datar rendah (128 Hz), mirip file disgust aktor yang sama (135 Hz) | zcr_mean (z +1,86), zcr_std (+2,05), rolloff_std (+1,28) | Terdengar sedih dan kecewa; ucapan panjang seperti diseret |
+| 2 | `Actor_22/03-01-04-01-01-01-22.wav` (P, normal) | sad → neutral | Kontur F0 hampir identik dengan neutral aktor yang sama (median 182 Hz vs 182 Hz, sama-sama menurun); spektrogram serupa. Aktor ini membawakan sad normal hampir seperti neutral | voiced_ratio (+0,99), dmfcc03_std (+1,11), contrast2_mean (+1,96) | Sedih tetapi mendekati netral; jeda antarkata tidak sepanjang rekaman 1 |
+| 3 | `Actor_21/03-01-04-02-01-01-21.wav` (L, strong) | sad → happy | Hanya 26% frame bersuara (pyin gagal melacak nada), F0 lebih tinggi daripada happy aktor yang sama (148 vs 108 Hz); kemungkinan suara bergetar atau seperti menangis | rolloff_std (−1,35), flatness_mean (−0,58), dmfcc10_std (+0,81) | Jelas sedih, seperti akan menangis |
+| 4 | `Actor_21/03-01-07-01-01-02-21.wav` (L, normal) | disgust → angry | Nada sangat rendah dan datar (85 Hz) dengan hanya 25% frame bersuara, kemungkinan suara serak (*creaky voice*); file angry aktor yang sama 151 Hz | rolloff_std (−1,31), contrast7_mean (+1,21), dmfcc05_std (+1,05) | Terdengar seperti marah; ada penekanan pada kata |
 
 ### Interpretasi
 
@@ -285,7 +285,11 @@ Dipilih dengan aturan dari prediksi tersimpan: mewakili confusion terbesar, dan 
 2. **Kualitas suara (desah, serak, suara bergetar) membuat fitur prosodi tidak andal.** Pada kasus 3 dan 4 hanya sekitar 25% frame terdeteksi bersuara, sehingga statistik F0 dihitung dari sedikit frame dan fitur spektral (ZCR, rolloff, flatness) yang mendominasi keputusan. Fitur kualitas suara seperti jitter, shimmer, atau HNR tidak ada di 90 fitur kita.
 3. **Kesalahan bukan akibat seleksi fitur.** SVM 90 dan SA52 membuat tebakan salah yang sama pada keempat file, dan 87 dari 105 file yang sama-sama salah. Ini sejalan dengan hasil utama: subset SA tidak kehilangan informasi yang dipakai model 90 fitur.
 4. Pada kasus 3 dan 4, pusat kelas terdekat justru kelas aslinya, tetapi jaraknya ke semua pusat hampir sama besar (sekitar 7–8 satuan z). File seperti ini jauh dari semua kelas; batas keputusan SVM yang nonlinier lalu jatuh ke kelas lain.
-5. **Usulan untuk paper (Future Work):** normalisasi fitur per speaker, serta fitur kualitas suara (jitter, shimmer, HNR).
+5. **Pemeriksaan dengar (Anggota C, 24 November 2026)** membedakan dua jenis kesalahan:
+   - **Rekaman 1–3: label benar, model yang salah.** Ketiganya jelas terdengar sedih bagi pendengar (diseret, mendekati netral, seperti akan menangis). Ciri yang dipakai manusia, yaitu tempo lambat dan jeda panjang (rekaman 1) serta suara menangis (rekaman 3), tidak tertangkap dengan baik oleh fitur statistik per file kita: satu-satunya yang mendekati adalah `voiced_ratio` (proporsi frame bersuara); tidak ada fitur laju bicara atau durasi jeda, dan pelacakan nada gagal pada suara menangis.
+   - **Rekaman 4: ambiguitas label.** Disgust ini terdengar seperti marah karena ada penekanan pada kata, sama dengan tebakan semua model. Sebagian kesalahan disgust → angry kemungkinan mencerminkan cara aktor membawakan emosi, bukan semata kelemahan model; data akting RAVDESS tidak divalidasi ulang per file oleh pendengar dalam proyek ini.
+   - Catatan: ini penilaian satu pendengar dan tidak buta terhadap label, jadi bersifat kualitatif.
+6. **Usulan untuk paper (Future Work):** fitur ritme (laju bicara, durasi jeda), normalisasi fitur per speaker, serta fitur kualitas suara (jitter, shimmer, HNR).
 
 ---
 
@@ -511,7 +515,7 @@ Centang langsung di dokumen setelah selesai.
 - [x] Langkah 10: skrip uji noise siap; mode check SIAP; 3 tes
 - [x] Langkah 10: uji noise dijalankan sekali (24 November 2026 20.45); 72 baris; gambar bahasa Inggris
 - [x] Langkah 11: error analysis 4 file (spektrogram, F0, fitur penarik) dan pola kesalahan
-- [ ] Langkah 11: catatan dengar keempat file diisi
+- [x] Langkah 11: catatan dengar keempat file diisi (3 terdengar sedih; disgust terdengar marah)
 - [x] Langkah 12: demo alpha 4 tab berjalan
 - [x] Langkah 12: model 90 vs 52 fitur berdampingan di Coba sendiri; kurva Optimasi dari history SA
 - [ ] Langkah 12: uji mikrofon dan file RAVDESS aktor 1–20; jalan di Colab/Spaces

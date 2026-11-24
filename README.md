@@ -127,7 +127,7 @@ Status audit terakhir ada di `docs/audit_anti_leakage.md`.
 | Evaluasi test sekali (C) | Selesai 24 November 2026; `results/main_table.csv`, `results/test_eval/` |
 | Uji noise (C) | Selesai 24 November 2026; `results/noise_eval/` |
 | Matriks transfer 5 × 5, trade-off λ, gambar paper (C) | Selesai |
-| Error analysis (C) | Selesai; catatan dengar 4 file menunggu |
+| Error analysis (C) | Selesai, termasuk catatan dengar 4 file |
 | Mini-paper IEEE dan slide (semua, integrasi C) | Belum |
 
 ## Referensi utama
